@@ -73,7 +73,7 @@ def add_email_command(*args):  # додаємо e-mail для користува
 
 
 @error_handler
-def phone_command(*args):  # Пошук телефона вибраного користувача.
+def show_user_command(*args):  # Пошук телефона вибраного користувача.
     return contact_book[args[0]]
 
 
@@ -97,6 +97,7 @@ HANDLERS = {
     'add birthday': add_birthday_command,
     'add email': add_email_command,
     'show all': show_all,
+    'show': show_user_command,
     'exit': exit,
     'good bye': exit,
     'close': exit,
