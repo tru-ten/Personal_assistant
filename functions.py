@@ -1,4 +1,4 @@
-from classes import AddressBook, Name, Phone, Birthday, Record
+from classes import AddressBook, Name, Phone, Birthday, Record, Email
 
 contact_book = AddressBook()
 
@@ -15,11 +15,14 @@ def error_handler(func):
             return 'Not enough parameters'
     return inner
 
+
 def unknown_command(args):
     return "unknown_command"
 
+
 def exit(args):
     return
+
 
 @error_handler
 def add_user(args):
@@ -35,6 +38,45 @@ def add_user(args):
     contact_book.add_record(rec)
     return f'User {name.value} added!'
 
+
+@error_handler
+def add_phone_command(*args):  # Додаємо номер телефону для вибраного користувача.
+    name = Name(args[0])
+    phone = Phone(args[1])
+    rec: Record = contact_book.get(str(name))
+    if rec:
+        return rec.add_phone(phone)
+    rec = Record(name)
+    return contact_book.add_record(rec)
+
+
+@error_handler
+def add_birthday_command(*args):  # додаємо дату народження для користувача
+    name = Name(args[0])
+    birthday = Birthday(args[1])
+    rec: Record = contact_book.get(str(name))
+    if rec:
+        return rec.add_birthday(birthday)
+    rec = Record(name)
+    return contact_book.add_record(rec)
+
+
+@error_handler
+def add_email_command(*args):  # додаємо e-mail для користувача
+    name = Name(args[0])
+    email = Email(args[1])
+    rec: Record = contact_book.get(str(name))
+    if rec:
+        return rec.add_email(email)
+    rec = Record(name)
+    return contact_book.add_record(rec)
+
+
+@error_handler
+def phone_command(*args):  # Пошук телефона вибраного користувача.
+    return contact_book[args[0]]
+
+
 def show_all(args):
     if len(contact_book)>0:
         result = ''
@@ -48,13 +90,18 @@ def show_all(args):
         return result
     return 'Contact book is empty'
 
+
 HANDLERS = {
     'add': add_user,
+    'add phone': add_phone_command,
+    'add birthday': add_birthday_command,
+    'add email': add_email_command,
     'show all': show_all,
     'exit': exit,
     'good bye': exit,
     'close': exit,
 }
+
 
 def parse_input(user_input):
     try:
