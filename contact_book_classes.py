@@ -30,16 +30,13 @@ class Name(Field):
 # Для перевірки на правильність введення номеру телефону, використовуємо регулярний вираз, що українські номери 
 # обов'язково мають починатися з '+380' і ще 9 цифр. 
 class Phone(Field):
-    @property
-    def value(self):
-        return self.__value
 
-    @value.setter
+    @Field.value.setter
     def value(self, value):
         if not re.match(r'^\+380\d{9}$', value):
             print('Wrong format. Phone number should be in the format +380XXXXXXXXX.')
             raise ValueError
-        self.__value = value
+        self._Field__value = value
 
 
 # Для перевірки на правильність введення дати народження, необхідно щоб ми записували ці об'єкти як об'єкти
@@ -47,34 +44,28 @@ class Phone(Field):
 # "2/2/42", '50.20.2000' чи навіть '29.02.2001'.
 # Також варто уникати дат народження, які є у майбутньому. Це враховано у методі add_birthday класу Record.
 class Birthday(Field):
-    @property
-    def value(self):
-        return self.__value
-        
-    @value.setter
+
+    @Field.value.setter
     def value(self, value):
         try:
-            self.__value = datetime.strptime(value, '%d.%m.%Y').date()
+            self._Field__value = datetime.strptime(value, '%d.%m.%Y').date()
         except ValueError:
             print('Wrong format. Enter birthday in format dd.mm.YYYY. Days in range(31), month in range(12)')
             raise ValueError
         
     def __str__(self):
-        return self.value.strftime('%d-%m-%Y')
+        return self.value.strftime('%d.%m.%Y')
 
 
 # Для перевірки на правильність введення email пропоную використати регулярний вираз, який був у нас у автоперевірці.
 class Email(Field):
-    @property
-    def value(self):
-        return self.__value
 
-    @value.setter
+    @Field.value.setter
     def value(self, value):
-        if not re.match(r'[A-Za-z]{1}[\w\.]+@[a-zA-Z0-9]+\.[a-zA-Z]{2,}\b', value):
+        if not re.match(r'[A-Za-z]{1}[\w.]+@[a-zA-Z0-9]+\.[a-zA-Z]{2,}\b', value):
             print('Wrong format. Email should be in the format xxxxxx@xxx.xx')
             raise ValueError
-        self.__value = value
+        self._Field__value = value
 
 
 class Record:
@@ -95,9 +86,10 @@ class Record:
 
     # Функція додає дату народження користувача. Враховано, що дата народження не може бути у майбутньому.
     def add_birthday(self, birthday: Birthday):
+        # if self.birthday.value >= datetime.now().date():
+        #     return f'The user has not yet been born'
+        # else:
         self.birthday = birthday
-        if self.birthday.value >= datetime.now().date():
-            return f'The user has not yet been born'
         return f'Birthday for user {self.name} was added successfully'
 
     # Функція додає email користувача. Перевірка на правильність прописана у класі Email.
@@ -108,8 +100,7 @@ class Record:
     # Рядкове представлення для одного запису у contact_book 
     def __str__(self) -> str:
         return f"User: {self.name} | phones: {', '.join(str(p) for p in self.phones)} | birthday: {self.birthday} " \
-               f"| email: {self.email}"
-    
+               f"| email: {self.email}"    
 
 class AddressBook(UserDict):
     def add_record(self, record: Record):
