@@ -9,7 +9,7 @@ def error_handler(func):
             result = func(*args)
             return result
         except KeyError:
-            return "No user"
+            return f"No user with name {args[0]}. You need firstly create "
         # під час виконання різних методів виникають різні помилки ValueError. Тому пропоную їх перехоплювати у методах, 
         # щоб користувач знав у чому проблема. Крім того нам ще треба продумавти логіку для перехоплення помилок типу AttribiteError.
         except ValueError as e:
@@ -29,7 +29,7 @@ def helper():
     res = ''
     for value in HANDLERS.values():
         res += f'{value[0]}\n'
-    return 'Bot has such commands: \n' + res[0:-6]
+    return '\nType one of the available commands from the list below:\n\n' + res[0:-6]
 
 
 @error_handler
@@ -39,7 +39,7 @@ def unknown_command():
 
 @error_handler
 def exit_command():
-    return
+    return 'Bye. Have a nice day. See you next time.'
 
 
 @error_handler

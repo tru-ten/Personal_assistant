@@ -188,8 +188,11 @@ class AddressBook(UserDict):
         next_month_list = []
         current_month = datetime.now().date().month
         for record in self.data.values():
-            if record.birthday.value.month == current_month + 1:
-                next_month_list.append(str(record))
+            if not record.birthday:
+                continue
+            else:
+                if record.birthday.value.month == current_month + 1:
+                    next_month_list.append(str(record))
         if len(next_month_list) == 0:
             return f'No users are celebrating birthday in the next month'
         else:
@@ -200,8 +203,11 @@ class AddressBook(UserDict):
         current_month_list = []
         current_month = datetime.now().date().month
         for record in self.data.values():
-            if record.birthday.value.month == current_month:
-                current_month_list.append(str(record))
+            if not record.birthday:
+                continue
+            else:
+                if record.birthday.value.month == current_month:
+                    current_month_list.append(str(record))
         if len(current_month_list) == 0:
             return f'No users are celebrating birthday in the current month'
         else:
