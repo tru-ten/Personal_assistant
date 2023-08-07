@@ -52,6 +52,9 @@ class Birthday(Field):
         except ValueError:
             print('Wrong format. Enter birthday in format dd.mm.YYYY. Days in range(31), month in range(12)')
             raise ValueError
+        if self.value >= datetime.now().date():
+            print('The user has not been born yet.')
+            raise ValueError
         
     def __str__(self):
         return self.value.strftime('%d.%m.%Y')
@@ -77,6 +80,12 @@ class Record:
         self.birthday = birthday
         self.email = email
 
+    def add_user(self, name: Name):
+        if not name.value:
+            self.name = name
+            return f"Record for user {name} was created"
+        return f"Record for user {name} already exist in this address book"
+    
     # Функція додає телефон до списку телефонів користувача. Перевіряє чи вже введено такий телефон раніше.
     def add_phone(self, phone: Phone) -> None:
         if phone.value not in self.phones:
@@ -86,26 +95,118 @@ class Record:
 
     # Функція додає дату народження користувача. Враховано, що дата народження не може бути у майбутньому.
     def add_birthday(self, birthday: Birthday):
-        # if self.birthday.value >= datetime.now().date():
-        #     return f'The user has not yet been born'
-        # else:
-        self.birthday = birthday
-        return f'Birthday for user {self.name} was added successfully'
+        if self.birthday:
+            return f'Birthday for user {self.name} already exists. Use command "change birthday".'
+        else:
+            self.birthday = birthday
+            return f'Birthday for user {self.name} was added successfully.'
 
     # Функція додає email користувача. Перевірка на правильність прописана у класі Email.
     def add_email(self, email: Email):
         self.email = email
         return f'E-mail for user {self.name} was added successfully'
     
+    def days_to_birthday(self):  # Функція повертає кількість днів до дня народження користувача.
+        if not self.birthday:
+            return f'No data for birthday of user {self.name}'
+        today = datetime.now().date()
+        bd_current_year = self.birthday.value.replace(year=today.year)
+        bd_next_year = self.birthday.value.replace(year=today.year + 1)
+        diff_years = today.year - self.birthday.value.year 
+        if (bd_current_year - today).days == 0:
+            return f"Today {self.name} celebrate {diff_years} birthday. Don't forget to buy a gift."
+        elif (bd_current_year - today).days > 0:
+            diff_days = (bd_current_year - today).days
+            return f"There are {diff_days} days left until the {self.name}'s {diff_years} birthday"
+        diff_days = (bd_next_year - today).days
+        return f"There are {diff_days} days left until the {self.name}'s {diff_years + 1} birthday"
+    
+    def days_to_birthday_int_numbers(self) -> int:  # Функція повертає кількість днів до дня народження користувача.
+        if not self.birthday:
+            return -1 # якщо дати народження нема, то повертає -1
+        today = datetime.now().date()
+        bd_current_year = self.birthday.value.replace(year=today.year)
+        bd_next_year = self.birthday.value.replace(year=today.year + 1)
+        if (bd_current_year - today).days == 0:
+            return 0
+        elif (bd_current_year - today).days > 0:
+            diff_days = (bd_current_year - today).days
+            return diff_days
+        diff_days = (bd_next_year - today).days
+        return diff_days
+        
     # Рядкове представлення для одного запису у contact_book 
     def __str__(self) -> str:
         return f"User: {self.name} | phones: {', '.join(str(p) for p in self.phones)} | birthday: {self.birthday} " \
                f"| email: {self.email}"    
 
+
 class AddressBook(UserDict):
     def add_record(self, record: Record):
         self.data[str(record.name)] = record
         return f"Contact {record.name} was added successfully"
+
+    def congrats_list(self, shift_days, record: Record = None):
+        congrats_list = []
+        for record in self.data.values():
+            res = record.days_to_birthday_int_numbers()
+            if 0 <= res <= shift_days:
+                congrats_list.append(str(record))
+        if len(congrats_list) == 0:
+            return f'No users are celebrating birthday in the next {shift_days} days'
+        else:
+            print(f'\n{len(congrats_list)} users are celebrating their birthday in the next {shift_days} days: ')
+            return '\n'.join(el for el in congrats_list)
+        
+    def next_week_birthdays(self):
+        next_week_list = []
+        today = datetime.now().date().weekday()
+        for record in self.data.values():
+            res = record.days_to_birthday_int_numbers()
+            if 7 - today <= res < 14 - today:
+                next_week_list.append(str(record))
+        if len(next_week_list) == 0:
+            return f'No users are celebrating birthday in the next week'
+        else:
+            print(f'\n{len(next_week_list)} users are celebrating their birthday in the next week: ')
+            return '\n'.join(el for el in next_week_list)
+        
+    def current_week_birthdays(self):
+        current_week_list = []
+        today = datetime.now().date().weekday()
+        for record in self.data.values():
+            res = record.days_to_birthday_int_numbers()
+            if - today <= res < 7 - today:
+                current_week_list.append(str(record))
+        if len(current_week_list) == 0:
+            return f'No users are celebrating birthday in the current week'
+        else:
+            print(f'\n{len(current_week_list)} users are celebrating their birthday in the current week: ')
+            return '\n'.join(el for el in current_week_list)
+
+    def next_month_birthdays(self, record: Record = None):
+        next_month_list = []
+        current_month = datetime.now().date().month
+        for record in self.data.values():
+            if record.birthday.value.month == current_month + 1:
+                next_month_list.append(str(record))
+        if len(next_month_list) == 0:
+            return f'No users are celebrating birthday in the next month'
+        else:
+            print(f'\n{len(next_month_list)} users are celebrating their birthday in the next month: ')
+            return '\n'.join(el for el in next_month_list)
+        
+    def current_month_birthdays(self, record: Record = None):
+        current_month_list = []
+        current_month = datetime.now().date().month
+        for record in self.data.values():
+            if record.birthday.value.month == current_month:
+                current_month_list.append(str(record))
+        if len(current_month_list) == 0:
+            return f'No users are celebrating birthday in the current month'
+        else:
+            print(f'\n{len(current_month_list)} users are celebrating their birthday in the current month: ')
+            return '\n'.join(el for el in current_month_list)
 
     def __repr__(self):
         return str(self)
