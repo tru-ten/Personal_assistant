@@ -1,5 +1,5 @@
 # Внаслідок перейменування пакетів оновлено імпорт пакетів
-from contact_book_classes import AddressBook, Name, Phone, Birthday, Record, Email
+from contact_book_classes import AddressBook, Name, Phone, Birthday, Record, Email, Country, City, Street, House
 import time
 
 contact_book = AddressBook()
@@ -40,7 +40,7 @@ def start():
     
 
 @error_handler
-def helper():
+def helper(*args):
     res = ''
     for value in HANDLERS.values():
         res += f'{value[0]} : {value[1]}\n'
@@ -93,7 +93,7 @@ def add_email_command(*args):  # додаємо e-mail для користува
     rec: Record = contact_book.get(str(name))
     if rec:
         return rec.add_email(email)
-    
+
 
 @error_handler
 def days_to_birthday(*args):  # Повертає кількість днів до дня народження користувача.
@@ -107,7 +107,7 @@ def congrats_list_command(*args):  # Повертає список корист�
     if len(contact_book) == 0:  # Якщо словник порожній.
         return 'Address book is now empty. Please add some users'
     else:
-        command_text = '''This command helps you to find out which users have a birthday during this period. 
+        command_text = '''This command helps you to find out which users have a birthday during this period.
 Enter the number of days (an integer): '''
         print(f'There are {len(contact_book)} users in address book')
         shift_days = int(input(command_text))
@@ -140,13 +140,87 @@ def show_user_command(*args):  # Пошук телефона вибраного 
 
 
 @error_handler
-def show_all_command():
+def show_all_command(*args):
     if len(contact_book) == 0:  # Якщо словник порожній.
         return 'Address book is now empty. Please add some users'
     else:
         print(f'There are {len(contact_book)} users in address book')
         return contact_book
+
+user_inputs = ['y', 'yes', '+']  #список з варіантами відповідей, якщо користувач погоджується
+
+
+exit_inputs = ['exit', 'break', '-'] # список з варіантами відповідей, якщо користувач хоче завершити виконання команди
+
+
+def input_checking(func):
+    def inner(class_, value):
+        if class_ == Country:
+            address = func(class_, value)
+            return address
+        print(f'Do you want to include {value}?')
+        answer = input('Y/N: ').strip()
+        if answer.lower() in user_inputs:
+            address = func(class_, value) 
+            return address
+        return None
+    return inner
+    # функція(декоратор) запитує в користувача чи хоче він записати інформацію поля класу повідомленням "Do you want to include {value}",
+    # де 'value' це країна/місто/вулиця/будинок. Функція повертає екземпляр класу, якщо введене значення користувача
+    # пройшло перевірку функцією 'address_input', або повертає 'exit', якщо користувач ввів одну з команд для виходу.
+    # Якщо користувач відповів на питання 'Do you want to include {value}?' - ні, то повертає 'None'
+
+
+@input_checking
+def address_input(class_, value):
+    while True: 
+        try:
+            address_value = input(f'Enter a {value}: ').strip()
+            if address_value.lower() in exit_inputs:
+                return 'exit'
+            country = class_(address_value)
+            return country
+        except:
+            print('Wrong format, try again')
+    # поки користувач не введе правильне значення або одну з команд для виходу, функція буде запитувати
+    # користувача на введеня даних
+
+
+def add_address(*args):
+    name = Name(input('Enter the name of the contact: ').strip())
+    #користувач вводить ім'я контакту 
+    rec: Record = contact_book.get(str(name)) 
+    #отримуємо інформацію про записаного користувача
     
+    if rec: 
+    #перевіряємо чи інсує запис з ім'ям, яке ввів користувач, якщо так, то продовжуємо
+        city = None 
+        street = None 
+        house = None 
+        # необов'язкові поля
+
+        country = address_input(Country, 'country') #отримуємо значення, яке користувач хоче додати
+        if country == 'exit': # перевіряємо чи функція повернула нам команду для закінчення додавання адреси
+            return 'Command cancelled' # якщо так, то зупиняємо команду та відповідаємо користувачеві
+              
+        city = address_input(City, 'city') #               ^
+        if city == 'exit': #                               | (інформація зверху)
+            rec.add_address(country, None, street, house)# |
+            return 'command canceled' #                    |
+         
+        street = address_input(Street, 'street') #         ^
+        if street == 'exit': #                             | (інформація зверху)
+            rec.add_address(country, city, None, house)# |
+            return 'Command cancelled' #                   |
+    
+        house = address_input(House, 'house')#             ^
+        if house == 'exit': #                              | (інформація зверху)
+            rec.add_address(country, city, street, None)# |
+            return 'Command cancelled' #                   |
+            
+        return rec.add_address(country, city, street, house) # записуємо адрес до інформації про людину
+    return f'There is no contact with name: {name}' #повертаємо інформацію, якщо немає запису з ім'ям, яке ввів користувач
+
     # Додаю функцію для пошуку збігів у contactbook. Повертає список контактів, у яких присутній збіг.
 @error_handler
 def search_command():  # Шукає задану послідовність символів у addressbook.
@@ -166,6 +240,7 @@ HANDLERS = {
     add_phone_command: ('12', 'add phone'),
     add_birthday_command: ('13', 'add birthday', 'birthday'),
     add_email_command: ('14', 'add email', 'email'),
+    add_address: ('15','add address', 'new address',),
     # Сюди необхідно додати функції на редагування (21-27) та видалення записів (31-37)
     days_to_birthday: ('41', 'days to birthday', 'days to bd'),
     congrats_list_command: ('42', 'upcoming birthdays', 'closest birthdays'),
@@ -180,11 +255,15 @@ HANDLERS = {
     helper: ('00', 'help', 'рудз')
 }
 
+FUNCS_NO_ARGS = [add_address, show_all_command, exit_command]
+
 
 def parse_input(user_input):
     for cmd, keywords in HANDLERS.items():
         for kwd in keywords:
             if user_input.lower().startswith(kwd):
+                if cmd in FUNCS_NO_ARGS:
+                    return cmd, user_input
                 data = user_input[len(kwd):].strip().split()
-                return cmd, data 
+                return cmd, data
     return unknown_command, []

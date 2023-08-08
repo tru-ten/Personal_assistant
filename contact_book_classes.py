@@ -72,6 +72,57 @@ class Email(Field):
         self._Field__value = value
 
 
+class Country(Field):
+
+    @Field.value.setter
+    def value(self, value):
+        with open('countries.txt', 'r') as fh:
+            readlines = fh.readlines()
+            for line in readlines:
+                if value.lower() == 'russia':
+                    self._Field__value = 'a terrorist country'
+                    return ''
+                elif value.lower() == line.lower().strip():
+                    lst_value = value.lower().strip().split(' ')
+                    capitalize_value = [i.capitalize() for i in lst_value]
+                    self._Field__value = ' '.join(capitalize_value)
+                    return ''
+            raise ValueError
+        
+    # Магічний метод 'setter', який перевіряє на правильність введеного користувачем значення і записує у поле 'self.__value' значення, якщо
+    # введена країна існує.
+
+class City(Field):
+
+    @Field.value.setter
+    def value(self, value):
+        if not re.match(r'^[A-z]{2,}$', value):
+            raise ValueError
+        self._Field__value = value
+    # Магічний метод 'setter', який перевіряє на правильність введеного користувачем значення і записує у поле 'self.__value' значення, якщо
+    # введений населений пункт складається тільки з літер та має довжину не менше 2-ох літер.
+
+class Street(Field):
+
+    @Field.value.setter
+    def value(self, value):
+        if not re.match(r'^[A-z\d\.\-\(\)\:\_\,\/ ]{2,}$', value):
+            raise ValueError
+        self._Field__value = value
+    # Магічний метод 'setter', який перевіряє на правильність введеного користувачем значення і записує у поле 'self.__value' значення, якщо
+    # назва введеної вулиці починається з літери та може містити тільки цифри та букви.
+
+class House(Field):
+
+    @Field.value.setter
+    def value(self, value):
+        if not re.match(r'[ A-z\d\-\\\/\.]{1,}', value):
+            raise ValueError
+        self._Field__value = value
+    # Магічний метод 'setter', який перевіряє на правильність введеного користувачем значення і записує у поле 'self.__value' значення, якщо
+    # введені назва/номер будинку складається з літер або цифр.
+
+
 class Record:
     def __init__(self, name: Name, phone: Phone = None, birthday: Birthday = None, email: Email = None) -> None:
         self.name = name
@@ -80,6 +131,7 @@ class Record:
             self.phones.append(phone)
         self.birthday = birthday
         self.email = email
+        self.address = ''
 
     def add_user(self, name: Name):
         if not name.value:
@@ -89,7 +141,7 @@ class Record:
     
     # Функція додає телефон до списку телефонів користувача. Перевіряє чи вже введено такий телефон раніше.
     def add_phone(self, phone: Phone) -> None:
-        if phone.value not in self.phones:
+        if phone.value not in [phone_.value for phone_ in self.phones]:
             self.phones.append(phone)
             return f"phone {phone} was added to contact {self.name}"
         return f"phone: {phone} is already registered for user {self.name}"
@@ -135,12 +187,16 @@ class Record:
             return diff_days
         diff_days = (bd_next_year - today).days
         return diff_days
+    
+    def add_address(self, country: Country, city: City = None, street: Street = None, house: House = None):
+        self.address = f'{country.value}/{city.value if city != None else "empty"}/{street.value if street != None else "empty"}/{house.value if house != None else "empty"}'
+        return 'Success'
+    # метод добавляє адресу проживання у поле self.address
         
-    # Рядкове представлення для одного запису у contact_book 
     def __str__(self) -> str:
         return f"User: {self.name} | phones: {', '.join(str(p) for p in self.phones)} | birthday: {self.birthday} " \
-               f"| email: {self.email}"    
-
+               f"| email: {self.email} | address: {self.address} "    
+    # Рядкове представлення для одного запису у contact_book
 
 class AddressBook(UserDict):
     def add_record(self, record: Record):
