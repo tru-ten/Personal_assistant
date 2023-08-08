@@ -1,5 +1,6 @@
 from collections import UserDict
 from datetime import datetime
+import pickle  # модуль для зберігання та читання інформації.
 import re
 
 
@@ -145,7 +146,33 @@ class AddressBook(UserDict):
     def add_record(self, record: Record):
         self.data[str(record.name)] = record
         return f"Contact {record.name} was added successfully"
+    
+    def save_to_file(self, filename):
+        with open(filename, mode="wb") as file:
+            pickle.dump(self.data, file)
+            print("Contack book has saved.")
 
+    def load_from_file(self, filename):
+        try:
+            with open(filename, 'rb') as f:
+                self.data = pickle.load(f)
+                print("Contact book has loaded.")
+        except (FileNotFoundError, pickle.UnpicklingError):
+            with open(filename, 'wb') as f:
+                self.data = {}
+                pickle.dump(self.data, f)
+
+    def search_match(self, match):
+        found_match = []
+        for item in self.data.values():
+            if match in str(item):
+                found_match.append(str(item))
+        if len(found_match) == 0:  # Якщо не знайшло збігів
+            return f"\nNo matches found for '{match}' in whole addressbook"
+        else:
+            print(f"\nWe found matches for '{match}' in {len(found_match)} contacts in whole contactbook: ")
+            return '\n'.join(el for el in found_match)
+    
     def congrats_list(self, shift_days, record: Record = None):
         congrats_list = []
         for record in self.data.values():

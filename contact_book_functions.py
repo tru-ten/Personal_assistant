@@ -1,7 +1,9 @@
 # Внаслідок перейменування пакетів оновлено імпорт пакетів
 from contact_book_classes import AddressBook, Name, Phone, Birthday, Record, Email
+import time
 
 contact_book = AddressBook()
+filename = 'contact_book.bin'
 
 def error_handler(func):
     def inner(*args):
@@ -24,12 +26,25 @@ def error_handler(func):
     return inner
 
 
+# Додано програму, яка одразу після запуску завантажує contact_book з файлу та видає привітальне повідомлення.
+def start():
+    contact_book.load_from_file(filename)
+    # Додаю невеликий привітальний текст. Тут в принципі можна й щось інше написати. І ще додав вивід кожного рядка за 1,5 секунди.
+    invitation_text = ["Hello. I am your personal assistant.", 
+                         "I will help you organize your contact book.", 
+                         "Using the command 'help', you can find out the list of available operations.",
+                          "Let's start and enjoy!!!" ]
+    for string in invitation_text:
+        time.sleep(0.2)
+        print(string)
+    
+
 @error_handler
 def helper():
     res = ''
     for value in HANDLERS.values():
-        res += f'{value[0]}\n'
-    return '\nType one of the available commands from the list below:\n\n' + res[0:-6]
+        res += f'{value[0]} : {value[1]}\n'
+    return '\nType one of the available commands from the list below:\n\n' + res
 
 
 @error_handler
@@ -39,6 +54,7 @@ def unknown_command():
 
 @error_handler
 def exit_command():
+    contact_book.save_to_file(filename) 
     return 'Bye. Have a nice day. See you next time.'
 
 
@@ -130,23 +146,38 @@ def show_all_command():
     else:
         print(f'There are {len(contact_book)} users in address book')
         return contact_book
+    
+    # Додаю функцію для пошуку збігів у contactbook. Повертає список контактів, у яких присутній збіг.
+@error_handler
+def search_command():  # Шукає задану послідовність символів у addressbook.
+    if len(contact_book) == 0:  # Якщо словник порожній.
+        command_text = '''Address book is now empty. Please add some users. 
+It is very difficult to find a black cat in a dark room, especially if it is not there.'''
+        return command_text
+    else:
+        match = input('Enter what you want to find. Two characters minimum: ')
+        if len(match) < 2:
+            return 'Search is too short. Enter at least 2 symbols.'
+        return contact_book.search_match(match)
 
 
 HANDLERS = {
-    show_all_command: ('show all', 'all phones', 'addressbook', 'phonebook', 'contactbook'),
-    days_to_birthday: ('days to birthday', 'days to bd'),
-    congrats_list_command: ('upcoming birthdays', 'closest birthdays'),
-    birthdays_next_week: ('next week', ),
-    birthdays_current_week: ('current week', ),
-    birthdays_next_month: ('next month', ),
-    birthdays_current_month: ('current month', ),
-    add_phone_command: ('add phone', ),
-    add_birthday_command: ('add birthday', 'birthday'),
-    add_email_command: ('add email', ),
-    add_user_command: ('add user', 'new user', 'create user', '+'),
-    show_user_command: ('show user', 'phone', 'number', 'show'),
-    exit_command: ('exit', 'bye', 'end', 'close', 'goodbye', 'учше'),
-    helper: ('help', 'рудз')
+    add_user_command: ('11', 'add user', 'new user', 'create user', '+'),
+    add_phone_command: ('12', 'add phone'),
+    add_birthday_command: ('13', 'add birthday', 'birthday'),
+    add_email_command: ('14', 'add email', 'email'),
+    # Сюди необхідно додати функції на редагування (21-27) та видалення записів (31-37)
+    days_to_birthday: ('41', 'days to birthday', 'days to bd'),
+    congrats_list_command: ('42', 'upcoming birthdays', 'closest birthdays'),
+    birthdays_next_week: ('43', 'next week birthdays', 'next week'),
+    birthdays_current_week: ('44', 'current week birthdays', 'current week'),
+    birthdays_next_month: ('45', 'next month birthdays', 'next month'),
+    birthdays_current_month: ('46', 'current month birthdays', 'current month'),
+    show_all_command: ('55', 'show all', 'all phones', 'addressbook', 'contactbook', 'ірщц фдд'),
+    show_user_command: ('66', 'show user', 'phone', 'number', 'show'),
+    search_command: ('77', 'search', 'find', 'match', 'іуфкср', 'аштв', 'ьфеср'),
+    exit_command: ('99', 'exit', 'bye', 'end', 'close', 'goodbye', 'учше'),
+    helper: ('00', 'help', 'рудз')
 }
 
 
