@@ -11,13 +11,13 @@ def error_handler(func):
             result = func(*args)
             return result
         except KeyError:
-            return f"No user with name {args[0]}. You need firstly create "
+            return f"No user."
         # під час виконання різних методів виникають різні помилки ValueError. Тому пропоную їх перехоплювати у методах, 
         # щоб користувач знав у чому проблема. Крім того нам ще треба продумавти логіку для перехоплення помилок типу AttribiteError.
         except ValueError as e:
             return e
         except IndexError:
-            return 'Not enough parameters'
+            return 'First you should enter the username and, if necessary, the required parameter'
         # Варто ще обробити помилки TypeError та AttribiteError. Вони точно будуть виникати під час роботи.
         except TypeError:
             return 'Wrong command or too many parameters are specified.'
