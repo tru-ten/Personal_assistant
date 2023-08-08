@@ -138,7 +138,7 @@ class Record:
     
     # Функція додає телефон до списку телефонів користувача. Перевіряє чи вже введено такий телефон раніше.
     def add_phone(self, phone: Phone) -> None:
-        if phone.value not in [p.value for p in self.phones]:
+        if phone.value not in [phone_.value for phone_ in self.phones]:
             self.phones.append(phone)
             return f"phone {phone} was added to contact {self.name}"
         return f"phone: {phone} is already registered for user {self.name}"
