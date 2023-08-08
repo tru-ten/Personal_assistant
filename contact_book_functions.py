@@ -25,11 +25,6 @@ def error_handler(func):
 
 
 @error_handler
-def greeting(*args):
-    return 'Hello how can I help you?'
-
-
-@error_handler
 def helper(*args):
     res = ''
     for value in HANDLERS.values():
@@ -189,7 +184,7 @@ def add_address(*args):
         house = None 
         # необов'язкові поля
 
-        country = address_input(Country, 'country') #отримуємо країну, яку користувач хоче додати
+        country = address_input(Country, 'country') #отримуємо значення, яке користувач хоче додати
         if country == 'exit': # перевіряємо чи функція повернула нам команду для закінчення додавання адреси
             return 'Command cancelled' # якщо так, то зупиняємо команду та відповідаємо користувачеві
               
@@ -213,7 +208,6 @@ def add_address(*args):
 
 
 HANDLERS = {
-    greeting: ('hello', 'hi', 'good afternoon'),
     show_all_command: ('show all', 'all phones', 'addressbook', 'phonebook', 'contactbook'),
     days_to_birthday: ('days to birthday', 'days to bd'),
     congrats_list_command: ('upcoming birthdays', 'closest birthdays'),
@@ -231,7 +225,7 @@ HANDLERS = {
     add_address: ('add address', 'new address',)
 }
 
-FUNCS_NO_ARGS = [add_address, show_all_command, exit_command, greeting]
+FUNCS_NO_ARGS = [add_address, show_all_command, exit_command]
 
 
 def parse_input(user_input):

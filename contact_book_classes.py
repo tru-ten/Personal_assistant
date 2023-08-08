@@ -82,7 +82,7 @@ class Country(Field):
                     self._Field__value = 'a terrorist country'
                     return ''
                 elif value.lower() == line.lower().strip():
-                    self._Field__value = value
+                    self._Field__value = value.lower().capitalize()
                     return ''
             raise ValueError
         
@@ -138,7 +138,7 @@ class Record:
     
     # Функція додає телефон до списку телефонів користувача. Перевіряє чи вже введено такий телефон раніше.
     def add_phone(self, phone: Phone) -> None:
-        if phone.value not in self.phones:
+        if phone.value not in [p.value for p in self.phones]:
             self.phones.append(phone)
             return f"phone {phone} was added to contact {self.name}"
         return f"phone: {phone} is already registered for user {self.name}"
@@ -185,7 +185,7 @@ class Record:
         diff_days = (bd_next_year - today).days
         return diff_days
     
-    def add_address(self, country: Country, city: City, street: Street = None, house: House = None):
+    def add_address(self, country: Country, city: City = None, street: Street = None, house: House = None):
         self.address = f'{country.value}/{city.value if city != None else "empty"}/{street.value if street != None else "empty"}/{house.value if house != None else "empty"}'
         return 'Success'
     # метод добавляє адресу проживання у поле self.address
