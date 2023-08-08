@@ -82,7 +82,9 @@ class Country(Field):
                     self._Field__value = 'a terrorist country'
                     return ''
                 elif value.lower() == line.lower().strip():
-                    self._Field__value = value.lower().capitalize()
+                    lst_value = value.lower().strip().split(' ')
+                    capitalize_value = [i.capitalize() for i in lst_value]
+                    self._Field__value = ' '.join(capitalize_value)
                     return ''
             raise ValueError
         
