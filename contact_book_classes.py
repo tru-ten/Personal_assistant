@@ -25,7 +25,13 @@ class Field:
 
 
 class Name(Field):
-    ...
+
+    @Field.value.setter
+    def value(self, value):
+        if not re.match(r'[A-z\d]{1,}', value):
+            print('Wrong format.')
+            raise ValueError
+        self._Field__value = value
 
 
 # Для перевірки на правильність введення номеру телефону, використовуємо регулярний вираз, що українські номери 
@@ -92,6 +98,7 @@ class Country(Field):
     # Магічний метод 'setter', який перевіряє на правильність введеного користувачем значення і записує у поле 'self.__value' значення, якщо
     # введена країна існує.
 
+
 class City(Field):
 
     @Field.value.setter
@@ -102,6 +109,7 @@ class City(Field):
     # Магічний метод 'setter', який перевіряє на правильність введеного користувачем значення і записує у поле 'self.__value' значення, якщо
     # введений населений пункт складається тільки з літер та має довжину не менше 2-ох літер.
 
+
 class Street(Field):
 
     @Field.value.setter
@@ -111,6 +119,7 @@ class Street(Field):
         self._Field__value = value
     # Магічний метод 'setter', який перевіряє на правильність введеного користувачем значення і записує у поле 'self.__value' значення, якщо
     # назва введеної вулиці починається з літери та може містити тільки цифри та букви.
+
 
 class House(Field):
 
@@ -136,15 +145,13 @@ class Record:
         self.street = street
         self.house = house
 
+
     def add_user(self, name: Name):
         if not name.value:
             self.name = name
             return f"Record for user {name} was created"
         return f"Record for user {name} already exist in this address book"
-    
-    # def change_user(self, old_name: Name, new_name):
-    #     self.name = new_name
-    #     return f'Name for user {old_name} was changed to {new_name}'
+
     
     # Функція додає телефон до списку телефонів користувача. Перевіряє чи вже введено такий телефон раніше.
     def add_phone(self, phone: Phone) -> None:
@@ -169,6 +176,7 @@ class Record:
                 return f'Phone: {phone} in contact {self.name} was deleted successfully'
         return f"Phone: {phone} is not present in {self.name}'s list of phones"
 
+
     # Функція додає дату народження користувача. Враховано, що дата народження не може бути у майбутньому.
     def add_birthday(self, birthday: Birthday):
         if self.birthday:
@@ -190,6 +198,7 @@ class Record:
         self.birthday = None
         return f'Birthday for contact {self.name} was successfully deleted'
 
+
     # Функція додає email користувача. Перевірка на правильність прописана у класі Email.
     def add_email(self, email: Email):
         if not self.email:
@@ -204,6 +213,7 @@ class Record:
         self.email = email
         return f'Email for contact {self.name} was changed successfully'
     
+
     def delete_email(self):
         if not self.email:
             return f"You haven't included birthday for contact {self.name} yet"
@@ -226,6 +236,7 @@ class Record:
         diff_days = (bd_next_year - today).days
         return f"There are {diff_days} days left until the {self.name}'s {diff_years + 1} birthday"
     
+
     def days_to_birthday_int_numbers(self) -> int:  # Функція повертає кількість днів до дня народження користувача.
         if not self.birthday:
             return -1 # якщо дати народження нема, то повертає -1
@@ -240,6 +251,7 @@ class Record:
         diff_days = (bd_next_year - today).days
         return diff_days
     
+
     def add_address(self, country: Country, city: City = None, street: Street = None, house: House = None):
         self.country = country
         self.city = city
@@ -253,36 +265,43 @@ class Record:
         self.country = country
         return f'Country address for user {self.name} was changed successfully'
     
+
     def delete_country(self):
         if not self.country:
             return 'You have not included country address yet'
         self.country = None
         return f'Country address for contact {self.name} was deleted successfully'
     
+
     def change_city(self, city: City):
         self.city = city
         return f'City address for user {self.name} was changed successfully'
     
+
     def delete_city(self):
         if not self.city:
             return 'You have not included city address yet'
         self.city = None
         return f'City address for contact {self.name} was deleted successfully'
     
+
     def change_street(self, street: Street):
         self.street = street
         return f'Street address for user {self.name} was changed successfully'
     
+
     def delete_street(self):
         if not self.street:
             return 'You have not included street address yet'
         self.street = None
         return f'Street address for contact {self.name} was deleted successfully'
 
+
     def change_house(self, house: House):
         self.house = house
         return f'House address for user {self.name} was changed successfully'
     
+
     def delete_house(self):
         if not self.house:
             return 'You have not included house address yet'
@@ -295,11 +314,14 @@ class Record:
                f"| email: {self.email} | address: {self.country}/{self.city}/{self.street}/{self.house}"    
     # Рядкове представлення для одного запису у contact_book
 
+
 class AddressBook(UserDict):
+
     def add_record(self, record: Record):
         self.data[str(record.name)] = record
         return f"Contact {record.name} was added successfully"
     
+
     def change_rec_name(self, old_name: Name, new_name: Name):
         for key in self.data.keys():
             if key == old_name.value:
@@ -309,6 +331,7 @@ class AddressBook(UserDict):
                 return f'Contact with name {old_name} was changed to name {new_name}'
         return f'There is not contact with name: {old_name}'
     
+
     def delete_rec(self, name: Name):
         for key in self.data.keys():
             if str(key) == name.value:
@@ -316,10 +339,12 @@ class AddressBook(UserDict):
                 return f'Contact with name: {name} was deleted successfully'
         return f'There is not contact with name: {name}'
     
+
     def save_to_file(self, filename):
         with open(filename, mode="wb") as file:
             pickle.dump(self.data, file)
             print("Contack book has saved.")
+
 
     def load_from_file(self, filename):
         try:
@@ -330,6 +355,7 @@ class AddressBook(UserDict):
             with open(filename, 'wb') as f:
                 self.data = {}
                 pickle.dump(self.data, f)
+
 
     def search_match(self, match):
         found_match = []
@@ -342,6 +368,7 @@ class AddressBook(UserDict):
             print(f"\nWe found matches for '{match}' in {len(found_match)} contacts in whole contactbook: ")
             return '\n'.join(el for el in found_match)
     
+
     def congrats_list(self, shift_days, record: Record = None):
         congrats_list = []
         for record in self.data.values():
@@ -354,6 +381,7 @@ class AddressBook(UserDict):
             print(f'\n{len(congrats_list)} users are celebrating their birthday in the next {shift_days} days: ')
             return '\n'.join(el for el in congrats_list)
         
+
     def next_week_birthdays(self):
         next_week_list = []
         today = datetime.now().date().weekday()
@@ -367,6 +395,7 @@ class AddressBook(UserDict):
             print(f'\n{len(next_week_list)} users are celebrating their birthday in the next week: ')
             return '\n'.join(el for el in next_week_list)
         
+
     def current_week_birthdays(self):
         current_week_list = []
         today = datetime.now().date().weekday()
@@ -379,6 +408,7 @@ class AddressBook(UserDict):
         else:
             print(f'\n{len(current_week_list)} users are celebrating their birthday in the current week: ')
             return '\n'.join(el for el in current_week_list)
+
 
     def next_month_birthdays(self, record: Record = None):
         next_month_list = []
@@ -395,6 +425,7 @@ class AddressBook(UserDict):
             print(f'\n{len(next_month_list)} users are celebrating their birthday in the next month: ')
             return '\n'.join(el for el in next_month_list)
         
+
     def current_month_birthdays(self, record: Record = None):
         current_month_list = []
         current_month = datetime.now().date().month
@@ -410,8 +441,10 @@ class AddressBook(UserDict):
             print(f'\n{len(current_month_list)} users are celebrating their birthday in the current month: ')
             return '\n'.join(el for el in current_month_list)
 
+
     def __repr__(self):
         return str(self)
+
 
     def __str__(self) -> str:  # Рядкове представлення для усіх записів у contact_book
         return "\n".join(str(r) for r in self.data.values())

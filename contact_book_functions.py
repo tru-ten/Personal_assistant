@@ -3,8 +3,16 @@ from contact_book_classes import AddressBook, Name, Phone, Birthday, Record, Ema
 import time
 import difflib
 
+
 contact_book = AddressBook()
 filename = 'contact_book.bin'
+
+exit_inputs = ['stop', 'break', '-'] # список з варіантами відповідей, якщо користувач хоче завершити виконання команди
+
+user_inputs = ['y', 'yes', '+']  #список з варіантами відповідей, якщо користувач погоджується
+
+CHANGING_FUNCS = ['Country', 'City', 'Street', 'House']
+
 
 def error_handler(func):
     def inner(*args):
@@ -23,7 +31,7 @@ def error_handler(func):
         except TypeError:
             return 'Wrong command or too many parameters are specified.'
         except AttributeError:
-            return f"User {args[0]} doesn't exist. First create a record about this user."
+            return f"User doesn't exist. First create a record about this user."
     return inner
 
 
@@ -38,7 +46,7 @@ def start():
     for string in invitation_text:
         time.sleep(0.2)
         print(string)
-    
+
 
 @error_handler
 def helper(*args):
@@ -49,14 +57,33 @@ def helper(*args):
 
 
 @error_handler
-def exit_command():
+def exit_command(*args):
     contact_book.save_to_file(filename) 
     return 'Bye. Have a nice day. See you next time.'
 
 
 @error_handler
+def data_input(class_, question):
+    while True:
+        try:
+            answer = input(f'{question}: ')
+            if answer.lower().strip() in exit_inputs:
+                return 'exit'
+            value = class_(answer.strip())
+            return value
+        except ValueError as e:
+            print(e)
+
+
+def no_user(name):
+    return f'There is no user with name {name}'
+
+
 def add_user_command(*args):
-    name = Name(args[0])
+    print('To stop the execution enter one of these commands (stop, break, -)')
+    name = data_input(Name, 'Enter the name of the new contact')
+    if name == 'exit':
+        return 'Command canceled'
     rec: Record = contact_book.get(str(name))
     if rec:
         return rec.add_user(name)
@@ -66,91 +93,158 @@ def add_user_command(*args):
 
 @error_handler
 def change_user_command(*args):
-    name = Name(args[0])
-    new_name = Name(args[1])
+    print('To stop the execution enter one of these commands (stop, break, -)')
+    name = data_input(Name, 'Enter the name of the contact you want to rename')
+    if name == 'exit':
+        return 'Command canceled'
+    new_name = data_input(Name, 'Enter a new name of the contact')
+    if new_name == 'exit':
+        return 'Command canceled'
     return contact_book.change_rec_name(name, new_name)
 
 
 @error_handler
 def delete_rec_command(*args):
-    name = Name(args[0])
+    print('To stop the execution enter one of these commands (stop, break, -)')
+    name = data_input(Name, 'Enter the name of the contact you want to delete')
+    if name == 'exit':
+        return 'Command canceled'
     return contact_book.delete_rec(name)
 
 
 @error_handler
 def add_phone_command(*args):  # Додаємо номер телефону для вибраного користувача.
-    name = Name(args[0])
-    phone = Phone(args[1])
+    print('To stop the execution enter one of these commands (stop, break, -)')
+    name = data_input(Name, 'Enter the name of the contact whose phone you want to add')
+    if name == 'exit':
+        return 'Command canceled'
     rec: Record = contact_book.get(str(name))
-    return rec.add_phone(phone)
+    if rec:
+        phone = data_input(Phone, 'Enter a phone which you want to add')
+        if phone == 'exit':
+            return 'Command canceled'
+        return rec.add_phone(phone)
+    return no_user(name)
     
 
 @error_handler
 def change_phone_command(*args):  # Додаємо номер телефону для вибраного користувача.
-    name = Name(args[0])
-    old_phone = Phone(args[1])
-    new_phone = Phone(args[2])
+    print('To stop the execution enter one of these commands (stop, break, -)')
+    name = data_input(Name, 'Enter the name of the contact whose phone you want to change')
+    if name == 'exit':
+        return 'Command canceled'
     rec: Record = contact_book.get(str(name))
-    return rec.change_phone(old_phone, new_phone)
+    if rec:
+        old_phone = data_input(Phone, 'Enter the phone you want to change')
+        if old_phone == 'exit':
+            return 'Command canceled'
+        new_phone = data_input(Phone, 'Enter a new phone you want to add')
+        if new_phone == 'exit':
+            return 'Command canceled'
+        return rec.change_phone(old_phone, new_phone)
+    return no_user(name)
 
 
 @error_handler
 def delete_phone_command(*args):
-    name = Name(args[0])
-    phone = Phone(args[1])
+    print('To stop the execution enter one of these commands (stop, break, -)')
+    name = data_input(Name, 'Enter the name of the contact whose phone you want to delete')
+    if name == 'exit':
+        return 'Command canceled'
     rec: Record = contact_book.get(str(name))
-    return rec.delete_phone(phone)
+    if rec:
+        phone = data_input(Phone, 'Enter the phone you want to delete')
+        if phone == 'exit':
+            return 'Command canceled'
+        return rec.delete_phone(phone)
+    return no_user(name)
 
 
 @error_handler
 def add_birthday_command(*args):  # додаємо дату народження для користувача
-    name = Name(args[0])
-    birthday = Birthday(args[1])
+    print('To stop the execution enter one of these commands (stop, break, -)')
+    name = data_input(Name, 'Enter the name of the contact to whom you want to add birthday')
+    if name == 'exit':
+        return 'Command canceled'
     rec: Record = contact_book.get(str(name))
     if rec:
+        birthday = data_input(Birthday, 'Enter the date of birth you want to add')
+        if birthday == 'exit':
+            return 'Command canceled'
         return rec.add_birthday(birthday)
+    return f'There is no contact with name {name}'
     
 
 @error_handler
 def change_birthday_command(*args):
-    name = Name(args[0])
-    birthday = Birthday(args[1])
+    print('To stop the execution enter one of these commands (stop, break, -)')
+    name = data_input(Name, 'Enter the name of the contact whose birthday you want to change')
+    if name == 'exit':
+        return 'Command canceled'
     rec: Record = contact_book.get(str(name))
-    return rec.change_birthday(birthday)
+    if rec:
+        birthday = data_input(Birthday, 'Enter a new date of birth')
+        if birthday == 'exit':
+            return 'Command canceled'
+        return rec.change_birthday(birthday)
+    return no_user(name)
 
 
 @error_handler
 def delete_birthday_command(*args):
-    name = Name(args[0])
+    print('To stop the execution enter one of these commands (stop, break, -)')
+    name = data_input(Name, 'Enter the name of the contact whose birthday you want to delete')
+    if name == 'exit':
+        return 'Command canceled'
     rec: Record = contact_book.get(str(name))
     return rec.delete_birthday()
 
+
 @error_handler
 def add_email_command(*args):  # додаємо e-mail для користувача
-    name = Name(args[0])
-    email = Email(args[1])
+    print('To stop the execution enter one of these commands (stop, break, -)')
+    name = data_input(Name, 'Enter the name of the contact to whom you want to add email')
+    if name == 'exit':
+        return 'Command canceled'
     rec: Record = contact_book.get(str(name))
-    return rec.add_email(email)
+    if rec:
+        email = data_input(Email, 'Enter the email you want to add')
+        if email == 'exit':
+            return 'Command canceled'
+        return rec.add_email(email)
+    return no_user(name)
     
 
 @error_handler
 def change_email_command(*args):
-    name = Name(args[0])
-    email = Email(args[1])
+    print('To stop the execution enter one of these commands (stop, break, -)')
+    name = data_input(Name, 'Enter the name of the contact whose email you want to change')
+    if name == 'exit':
+        return 'Command canceled'
     rec: Record = contact_book.get(str(name))
-    return rec.change_email(email)
+    if rec:
+        email = data_input(Email, 'Enter a new email you want to add')
+        if email == 'exit':
+            return 'Command canceled'
+        return rec.change_email(email)
 
 
 @error_handler
 def delete_email_command(*args):
-    name = Name(args[0])
+    print('To stop the execution enter one of these commands (stop, break, -)')
+    name = data_input(Name, 'Enter the name of the contact whose email you want to delete')
+    if name == 'exit':
+        return 'Command canceled'
     rec: Record = contact_book.get(str(name))
     return rec.delete_email()
 
 
 @error_handler
 def days_to_birthday(*args):  # Повертає кількість днів до дня народження користувача.
-    name = Name(args[0])
+    print('To stop the execution enter one of these commands (stop, break, -)')
+    name = data_input(Name, 'Enter the name of the contact to know how many days left utill his/her birthday')
+    if name == 'exit':
+        return 'Command canceled'
     rec: Record = contact_book.get(str(name))
     return rec.days_to_birthday()
 
@@ -168,28 +262,29 @@ Enter the number of days (an integer): '''
 
 
 @error_handler
-def birthdays_next_week():  # Користувачі, котрі святкують ДН наступного тижня.
+def birthdays_next_week(*args):  # Користувачі, котрі святкують ДН наступного тижня.
     return contact_book.next_week_birthdays()
 
 
 @error_handler
-def birthdays_current_week():  # Користувачі, котрі святкують ДН поточного тижня.
+def birthdays_current_week(*args):  # Користувачі, котрі святкують ДН поточного тижня.
     return contact_book.current_week_birthdays()
 
 
 @error_handler
-def birthdays_next_month():  # Користувачі, котрі святкують ДН наступного місяця.
+def birthdays_next_month(*args):  # Користувачі, котрі святкують ДН наступного місяця.
     return contact_book.next_month_birthdays()
 
 
 @error_handler
-def birthdays_current_month():  # Користувачі, котрі святкують ДН поточного місяця.
+def birthdays_current_month(*args):  # Користувачі, котрі святкують ДН поточного місяця.
     return contact_book.current_month_birthdays()
 
 
 @error_handler
 def show_user_command(*args):  # Пошук телефона вибраного користувача.
-    return contact_book[args[0]]
+    name = data_input(Name, 'Enter the name of the contact')
+    return contact_book[str(name)]
 
 
 @error_handler
@@ -200,12 +295,6 @@ def show_all_command(*args):
         print(f'There are {len(contact_book)} users in address book')
         return contact_book
 
-user_inputs = ['y', 'yes', '+']  #список з варіантами відповідей, якщо користувач погоджується
-
-
-exit_inputs = ['exit', 'break', '-'] # список з варіантами відповідей, якщо користувач хоче завершити виконання команди
-
-CHANGING_FUNCS = ['Country', 'City', 'Street', 'House']
 
 def input_checking(func):
     def inner(class_, value):
@@ -241,6 +330,7 @@ def address_input(class_, value):
 
 
 def add_address(*args):
+    print('To stop the execution enter one of these commands (stop, break, -)')
     name = Name(input('Enter the name of the contact: ').strip())
     #користувач вводить ім'я контакту 
     rec: Record = contact_book.get(str(name)) 
@@ -278,6 +368,7 @@ def add_address(*args):
 
 @error_handler
 def change_country_command(*args):
+    print('To stop the execution enter one of these commands (stop, break, -)')
     name = Name(input('Enter the name of the contact: ').strip())
     rec: Record = contact_book.get(str(name))
     country = address_input(Country, 'Country') #отримуємо значення, яке користувач хоче додати
@@ -288,6 +379,7 @@ def change_country_command(*args):
 
 @error_handler
 def change_city_command(*args):
+    print('To stop the execution enter one of these commands (stop, break, -)')
     name = Name(input('Enter the name of the contact: ').strip())
     rec: Record = contact_book.get(str(name))
     city = address_input(City, 'City')
@@ -318,31 +410,42 @@ def change_house_command(*args):
 
 @error_handler
 def delete_country_command(*args):
-    name = Name(args[0])
+    name = data_input(Name, 'Enter the name of the contact whose country address you want to delete')
+    if name == 'exit':
+        return 'Command canceled'
     rec: Record = contact_book.get(str(name))
     return rec.delete_country()
 
+
 @error_handler
 def delete_city_command(*args):
-    name = Name(args[0])
+    name = data_input(Name, 'Enter the name of the contact whose city address you want to delete')
+    if name == 'exit':
+        return 'Command canceled'
     rec: Record = contact_book.get(str(name))
     return rec.delete_city()
 
+
 @error_handler
 def delete_street_command(*args):
-    name = Name(args[0])
+    name = data_input(Name, 'Enter the name of the contact whose street address you want to delete')
+    if name == 'exit':
+        return 'Command canceled'
     rec: Record = contact_book.get(str(name))
     return rec.delete_street()
 
+
 @error_handler
 def delete_house_command(*args):
-    name = Name(args[0])
+    name = data_input(Name, 'Enter the name of the contact whose house address you want to delete')
+    if name == 'exit':
+        return 'Command canceled'
     rec: Record = contact_book.get(str(name))
     return rec.delete_house()
 
     # Додаю функцію для пошуку збігів у contactbook. Повертає список контактів, у яких присутній збіг.
 @error_handler
-def search_command():  # Шукає задану послідовність символів у addressbook.
+def search_command(*args):  # Шукає задану послідовність символів у addressbook.
     if len(contact_book) == 0:  # Якщо словник порожній.
         command_text = '''Address book is now empty. Please add some users. 
 It is very difficult to find a black cat in a dark room, especially if it is not there.'''
@@ -392,6 +495,7 @@ HANDLERS = {
     helper: ('00', 'help', 'рудз')
 }
 
+
 @error_handler
 def unknown_command(*args):
     if len(args) == 3:
@@ -423,6 +527,5 @@ def parse_input(user_input):
     for cmd, keywords in HANDLERS.items():
         for kwd in keywords:
             if user_input.lower().startswith(kwd):
-                data = user_input[len(kwd):].strip().split()
-                return cmd, data
+                return cmd, user_input
     return unknown_command, user_input.strip().split()
