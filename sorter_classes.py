@@ -23,15 +23,18 @@ class UnsortedFile:
 
     def normalize_name(self):
         normalized_str_name = normalize(self.stem)
-        self.__path = self.__path.with_stem(normalized_str_name)
+        self.__path = self.__path.rename(
+            self.__path.with_stem(normalized_str_name))
 
     def move(self, target_dir: pathlib.Path):
+        if self.__path.parent == target_dir:
+            return
         if not target_dir.exists():
             target_dir.mkdir()
         new_name = target_dir.joinpath(self.name)
         while new_name.exists():
             new_name = new_name.with_stem(f"{new_name.stem}_1")
-        self.__path = self.__path.replace(new_name)
+        self.__path = self.__path.rename(new_name)
 
     @property
     def category(self):
@@ -80,8 +83,8 @@ class Sorter:
             if path.is_file():
                 file = UnsortedFile(path)
                 cat = file.category
-                file.move(self.paths[cat])
                 file.normalize_name()
+                file.move(self.paths[cat])
                 self.__present_exts[cat].add(file.suffix)
                 self.__present_files[cat].append(file.absolute)
         self.delete_empty_dirs()
