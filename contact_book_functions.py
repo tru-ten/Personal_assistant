@@ -1,6 +1,7 @@
 # Внаслідок перейменування пакетів оновлено імпорт пакетів
 from contact_book_classes import AddressBook, Name, Phone, Birthday, Record, Email, Country, City, Street, House
 import time
+import difflib
 
 contact_book = AddressBook()
 filename = 'contact_book.bin'
@@ -45,11 +46,6 @@ def helper(*args):
     for value in HANDLERS.values():
         res += f'{value[0]} : {value[1]}\n'
     return '\nType one of the available commands from the list below:\n\n' + res
-
-
-@error_handler
-def unknown_command():
-    return 'Unknown command. Try again'
 
 
 @error_handler
@@ -396,15 +392,37 @@ HANDLERS = {
     helper: ('00', 'help', 'рудз')
 }
 
-FUNCS_NO_ARGS = [add_address, show_all_command, exit_command]
+@error_handler
+def unknown_command(*args):
+    if len(args) == 3:
+        if 'birthday' or 'bd' in args[2]:
+            command = f'{args[0]} {args[1]} {args[2]}'
+    
+    elif len(args) == 2:
+        command = f'{args[0]} {args[1]}'
+
+    else:
+        command = args[0]
+
+    possibilities = []
+
+    for commands in HANDLERS.values():
+        possibilities.extend([i for i in commands])
+    
+    n = 1
+    cutoff = 0.8
+    close_matches = difflib.get_close_matches(command, 
+                possibilities, n, cutoff)
+    
+    if len(close_matches) != 0:
+        return f'Did you mean {close_matches[0]}?'
+    return 'Unknown command. Try again'
 
 
 def parse_input(user_input):
     for cmd, keywords in HANDLERS.items():
         for kwd in keywords:
             if user_input.lower().startswith(kwd):
-                # if cmd in FUNCS_NO_ARGS:
-                #     return cmd, user_input
                 data = user_input[len(kwd):].strip().split()
                 return cmd, data
-    return unknown_command, []
+    return unknown_command, user_input.strip().split()
