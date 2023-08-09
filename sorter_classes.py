@@ -121,13 +121,13 @@ def main():
         return f"Folder with path {path} doesn't exist"
     really = input(
         f"Do you really want to sort folder {path.absolute()}? (y/n)")
-    if really != "y":
+    if really.lower() != "y":
         return "Sort interrupted"
     sorter = Sorter(path)
     sorter.sort()
     if sorter.contains_archives:
         to_unpack = input("\nDo you want to unpack archives? (y/n)")
-        if to_unpack == "y":
+        if to_unpack.lower() == "y":
             sorter.unpack_archives()
     sorter.print_result()
     return "Ok"
