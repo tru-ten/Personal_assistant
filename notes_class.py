@@ -39,6 +39,8 @@ class Note:
         self.status = True
 
     def __str__(self):
+        if self.tags is None:
+            self.tags = ""
         return f"'{self.name.value}' {self.content.value} (tegs: {', '.join(tag.value for tag in self.tags)}) status: {str(self.status)} "
     
     def add_tag_in_tags(self, tag):
@@ -105,18 +107,10 @@ class Notebook(UserDict):
     
     def get_tag_values(self):
         return self.tags_list
-
-    def add_tag_note(self, new_tag):
-        if new_tag.value not in self.tags_list:
-            self.tags_list.append(new_tag.value)
-            print(f"Тег {new_tag.value} додано")
-        else:
-            print(f"Тег {new_tag.value} вже існує")
     
     def iterator(self, et_list, n):
         count = 0
         page = ""
-
         for note in et_list:
             page += (str(note)) + "\n"
             count += 1
@@ -159,4 +153,5 @@ class Notebook(UserDict):
                     self.data[name.value] = note
                 self.tags_list = data["tags"]
         except (FileNotFoundError):
+            Notebook.save_json(self, file_path)
             print(f"The file {file_path} is missing or does not contain valid JSON data.")

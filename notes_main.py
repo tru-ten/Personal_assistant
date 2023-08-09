@@ -6,7 +6,7 @@ OPTIONS = {
         1: ["name", "text", Field],
         2: ["content", "text", Field],
         3: ["tags", "text", list],  
-        4: ["status", "true/false"],
+        4: ["status", "true(any character)/false(empty)"],
         5: []
     }
 
@@ -21,6 +21,7 @@ def get_input_int():
     return get_input_int()
 
 def numerator(list_result):
+    print("")
     if len(list_result) > 0:
         dict_results = {i+1: record for i, record in enumerate(list_result)}
         for id, record in dict_results.items():
@@ -34,11 +35,11 @@ def numerator(list_result):
 
 def content_note(note):
     print(f"> Found note: \n{note}"
-            f"\n{'Note menu':.^40}"
+            f"\n\n{'Note menu':.^40}"
             "\n1 - delete"
             "\n2 - edit" 
             "\n3 - toggle status"
-            "\n4 - ain menu")
+            "\n4 - return to main menu")
     option = get_input_int()
     if option == 1:
         return note_book.delete_in_note(note) 
@@ -80,7 +81,7 @@ def search_tag_in_tegs():
 def edit_tag(note):
     while True:
         print(f"> Record: {note}"  
-            f"\n{'Tag menu':.^40}"
+            f"\n\n{'Tag menu':.^40}"
             "\n1 - delete"
             "\n2 - add" 
             "\n3 - return to record menu")
@@ -105,13 +106,13 @@ def edit_note(option, note):
         return print("> Error: Invalid search parameter selected")    
     if not search_params:
         return print("> Error: Invalid search parameter selected")  
-    if search_params[0] == "tags":
-        return edit_tag(note)
-    if search_params[0] == "status":
-        return note_book.edit_status_in_note(note)  
     input_content = input(f"Enter search value for {search_params[0]} (format input: {search_params[1]}) >>> ")
     new_value = Field(input_content)
     note_book.edit_in_note(note, search_params[0], new_value)
+    if search_params[0] == "tags":
+        return edit_tag(note)
+    if search_params[0] == "status":
+        return note_book.edit_status_in_note(note) 
 
 def search_note(option, note):
     try:
@@ -132,7 +133,7 @@ def search_note(option, note):
 
 def note_menu(name, func, note=None):
     while True:
-        print(f"{name:.^40}"
+        print(f"\n{name:.^40}"
                 "\n1 - by name"
                 "\n2 - by content"
                 "\n3 - by tag"
@@ -155,10 +156,11 @@ def add_note():
         option = get_input_int()
         if option == 1:
             tag = search_tag_in_tegs()
-            tag = Tag(tag)
-            if tag not in note.tags:
-                note.add_tag_in_tags(tag)
-                print(f"A new tag {tag} has been added to the recording {name}")  
+            if tag is not None:
+                tag = Tag(tag) 
+                if tag not in note.tags:
+                    note.add_tag_in_tags(tag)
+                    print(f"A new tag {tag} has been added to the recording {name}")
             else:
                 print(f"The tag {tag} already exists")
         elif option == 2:
@@ -171,6 +173,7 @@ def show_comand(et_list, n):
         result = ''
         page = 1
         for note in note_book.iterator(et_list, n):
+            result = ''
             text = f"page {page}" 
             result += f"{text:.^80}\n" + note
             page += 1
@@ -184,7 +187,7 @@ def main(): #
     print("> Notebook data loaded.")
 
     while True:
-        print(f"{'Notebook menu:':.^40}"
+        print(f"\n{'Notebook menu:':.^40}"
             "\n1 - show all notes"
             "\n2 - create note"
             "\n3 - search in notes"
@@ -194,8 +197,8 @@ def main(): #
         user_input = get_input_int()
 
         if user_input == 1:
-            print(f"{'All notes':.^80}")
-            show_comand(note_book.values(), n=5)
+            print(f"\n{'All notes':.^80}")
+            show_comand(note_book.values(), n=7)
 
         elif user_input == 2:
             add_note()
@@ -205,8 +208,8 @@ def main(): #
 
         elif user_input == 4:
             sorted_notes = note_book.sort_by_tags()
-            print(f"{'Sort by tags':.^80}")
-            show_comand(sorted_notes, n=5)
+            print(f"\n{'Sort by tags':.^80}")
+            show_comand(sorted_notes, n=7)
 
         elif user_input == 5:
             note_book.save_json('notebook.json')
@@ -215,7 +218,6 @@ def main(): #
 
         else:
             print("> Incorrect selection. Try again.")
-            user_input = get_input_int()
 
 if __name__ == "__main__":
     main()
