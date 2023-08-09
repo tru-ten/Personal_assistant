@@ -28,7 +28,7 @@ class Name(Field):
 
     @Field.value.setter
     def value(self, value):
-        if not re.match(r'[A-z\d]{1,}', value):
+        if not re.match(r'[A-z\d _\.\(\)\/\\\,]{1,20}', value):
             print('Wrong format.')
             raise ValueError
         self._Field__value = value
@@ -103,7 +103,7 @@ class City(Field):
 
     @Field.value.setter
     def value(self, value):
-        if not re.match(r'^[A-z]{2,}$', value):
+        if not re.match(r'^[A-z]{2,25}$', value):
             raise ValueError
         self._Field__value = value
     # Магічний метод 'setter', який перевіряє на правильність введеного користувачем значення і записує у поле 'self.__value' значення, якщо
@@ -114,7 +114,7 @@ class Street(Field):
 
     @Field.value.setter
     def value(self, value):
-        if not re.match(r'^[A-z\d\.\-\(\)\:\_\,\/ ]{2,}$', value):
+        if not re.match(r'^[A-z\d\.\-\(\)\:\_\,\/ ]{2,25}$', value):
             raise ValueError
         self._Field__value = value
     # Магічний метод 'setter', який перевіряє на правильність введеного користувачем значення і записує у поле 'self.__value' значення, якщо
@@ -125,7 +125,7 @@ class House(Field):
 
     @Field.value.setter
     def value(self, value):
-        if not re.match(r'[ A-z\d\-\\\/\.]{1,}', value):
+        if not re.match(r'[ A-z\d\-\\\/\.]{1,15}', value):
             raise ValueError
         self._Field__value = value
     # Магічний метод 'setter', який перевіряє на правильність введеного користувачем значення і записує у поле 'self.__value' значення, якщо
@@ -155,10 +155,10 @@ class Record:
     
     # Функція додає телефон до списку телефонів користувача. Перевіряє чи вже введено такий телефон раніше.
     def add_phone(self, phone: Phone) -> None:
-        if phone.value not in [phone_.value for phone_ in self.phones]:
+        if phone.value not in [phone_.value for phone_ in self.phones] and len(self.phones) <= 5:
             self.phones.append(phone)
             return f"phone {phone} was added to contact {self.name}"
-        return f"phone: {phone} is already registered for user {self.name}"
+        return f"phone: {phone} is already registered for user {self.name} and you can add only 5 phone numbers"
 
 
     def change_phone(self, old_phone: Phone, new_phone: Phone):
@@ -186,8 +186,6 @@ class Record:
         
 
     def change_birthday(self, birthday: Birthday):
-        if not self.birthday:
-            return f'Birthday for contact {self.name} is not included. Use command "add birthday".'
         self.birthday = birthday
         return f'Birthday for contact {self.name} was changed successfully'
     
@@ -208,8 +206,6 @@ class Record:
     
 
     def change_email(self, email: Email):
-        if not self.email:
-            return f'Email for contact {self.name} is not included. Use command "add email".'
         self.email = email
         return f'Email for contact {self.name} was changed successfully'
     

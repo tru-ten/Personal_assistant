@@ -83,7 +83,7 @@ def add_user_command(*args):
     print('To stop the execution enter one of these commands (stop, break, -)')
     name = data_input(Name, 'Enter the name of the new contact')
     if name == 'exit':
-        return 'Command canceled'
+        return 'Command cancelled'
     rec: Record = contact_book.get(str(name))
     if rec:
         return rec.add_user(name)
@@ -96,10 +96,10 @@ def change_user_command(*args):
     print('To stop the execution enter one of these commands (stop, break, -)')
     name = data_input(Name, 'Enter the name of the contact you want to rename')
     if name == 'exit':
-        return 'Command canceled'
+        return 'Command cancelled'
     new_name = data_input(Name, 'Enter a new name of the contact')
     if new_name == 'exit':
-        return 'Command canceled'
+        return 'Command cancelled'
     return contact_book.change_rec_name(name, new_name)
 
 
@@ -108,7 +108,7 @@ def delete_rec_command(*args):
     print('To stop the execution enter one of these commands (stop, break, -)')
     name = data_input(Name, 'Enter the name of the contact you want to delete')
     if name == 'exit':
-        return 'Command canceled'
+        return 'Command cancelled'
     return contact_book.delete_rec(name)
 
 
@@ -117,12 +117,12 @@ def add_phone_command(*args):  # Додаємо номер телефону дл
     print('To stop the execution enter one of these commands (stop, break, -)')
     name = data_input(Name, 'Enter the name of the contact whose phone you want to add')
     if name == 'exit':
-        return 'Command canceled'
+        return 'Command cancelled'
     rec: Record = contact_book.get(str(name))
     if rec:
         phone = data_input(Phone, 'Enter a phone which you want to add')
         if phone == 'exit':
-            return 'Command canceled'
+            return 'Command cancelled'
         return rec.add_phone(phone)
     return no_user(name)
     
@@ -132,15 +132,15 @@ def change_phone_command(*args):  # Додаємо номер телефону �
     print('To stop the execution enter one of these commands (stop, break, -)')
     name = data_input(Name, 'Enter the name of the contact whose phone you want to change')
     if name == 'exit':
-        return 'Command canceled'
+        return 'Command cancelled'
     rec: Record = contact_book.get(str(name))
     if rec:
         old_phone = data_input(Phone, 'Enter the phone you want to change')
         if old_phone == 'exit':
-            return 'Command canceled'
+            return 'Command cancelled'
         new_phone = data_input(Phone, 'Enter a new phone you want to add')
         if new_phone == 'exit':
-            return 'Command canceled'
+            return 'Command cancelled'
         return rec.change_phone(old_phone, new_phone)
     return no_user(name)
 
@@ -150,12 +150,12 @@ def delete_phone_command(*args):
     print('To stop the execution enter one of these commands (stop, break, -)')
     name = data_input(Name, 'Enter the name of the contact whose phone you want to delete')
     if name == 'exit':
-        return 'Command canceled'
+        return 'Command cancelled'
     rec: Record = contact_book.get(str(name))
     if rec:
         phone = data_input(Phone, 'Enter the phone you want to delete')
         if phone == 'exit':
-            return 'Command canceled'
+            return 'Command cancelled'
         return rec.delete_phone(phone)
     return no_user(name)
 
@@ -165,12 +165,12 @@ def add_birthday_command(*args):  # додаємо дату народження
     print('To stop the execution enter one of these commands (stop, break, -)')
     name = data_input(Name, 'Enter the name of the contact to whom you want to add birthday')
     if name == 'exit':
-        return 'Command canceled'
+        return 'Command cancelled'
     rec: Record = contact_book.get(str(name))
     if rec:
         birthday = data_input(Birthday, 'Enter the date of birth you want to add')
         if birthday == 'exit':
-            return 'Command canceled'
+            return 'Command cancelled'
         return rec.add_birthday(birthday)
     return f'There is no contact with name {name}'
     
@@ -180,12 +180,12 @@ def change_birthday_command(*args):
     print('To stop the execution enter one of these commands (stop, break, -)')
     name = data_input(Name, 'Enter the name of the contact whose birthday you want to change')
     if name == 'exit':
-        return 'Command canceled'
+        return 'Command cancelled'
     rec: Record = contact_book.get(str(name))
     if rec:
         birthday = data_input(Birthday, 'Enter a new date of birth')
         if birthday == 'exit':
-            return 'Command canceled'
+            return 'Command cancelled'
         return rec.change_birthday(birthday)
     return no_user(name)
 
@@ -195,7 +195,7 @@ def delete_birthday_command(*args):
     print('To stop the execution enter one of these commands (stop, break, -)')
     name = data_input(Name, 'Enter the name of the contact whose birthday you want to delete')
     if name == 'exit':
-        return 'Command canceled'
+        return 'Command cancelled'
     rec: Record = contact_book.get(str(name))
     return rec.delete_birthday()
 
@@ -205,12 +205,12 @@ def add_email_command(*args):  # додаємо e-mail для користува
     print('To stop the execution enter one of these commands (stop, break, -)')
     name = data_input(Name, 'Enter the name of the contact to whom you want to add email')
     if name == 'exit':
-        return 'Command canceled'
+        return 'Command cancelled'
     rec: Record = contact_book.get(str(name))
     if rec:
         email = data_input(Email, 'Enter the email you want to add')
         if email == 'exit':
-            return 'Command canceled'
+            return 'Command cancelled'
         return rec.add_email(email)
     return no_user(name)
     
@@ -220,12 +220,12 @@ def change_email_command(*args):
     print('To stop the execution enter one of these commands (stop, break, -)')
     name = data_input(Name, 'Enter the name of the contact whose email you want to change')
     if name == 'exit':
-        return 'Command canceled'
+        return 'Command cancelled'
     rec: Record = contact_book.get(str(name))
     if rec:
         email = data_input(Email, 'Enter a new email you want to add')
         if email == 'exit':
-            return 'Command canceled'
+            return 'Command cancelled'
         return rec.change_email(email)
 
 
@@ -234,7 +234,7 @@ def delete_email_command(*args):
     print('To stop the execution enter one of these commands (stop, break, -)')
     name = data_input(Name, 'Enter the name of the contact whose email you want to delete')
     if name == 'exit':
-        return 'Command canceled'
+        return 'Command cancelled'
     rec: Record = contact_book.get(str(name))
     return rec.delete_email()
 
@@ -244,7 +244,7 @@ def days_to_birthday(*args):  # Повертає кількість днів д�
     print('To stop the execution enter one of these commands (stop, break, -)')
     name = data_input(Name, 'Enter the name of the contact to know how many days left utill his/her birthday')
     if name == 'exit':
-        return 'Command canceled'
+        return 'Command cancelled'
     rec: Record = contact_book.get(str(name))
     return rec.days_to_birthday()
 
@@ -350,7 +350,7 @@ def add_address(*args):
         city = address_input(City, 'city') #               ^
         if city == 'exit': #                               | (інформація зверху)
             rec.add_address(country, None, street, house)# |
-            return 'command canceled' #                    |
+            return 'command cancelled' #                    |
          
         street = address_input(Street, 'street') #         ^
         if street == 'exit': #                             | (інформація зверху)
@@ -412,7 +412,7 @@ def change_house_command(*args):
 def delete_country_command(*args):
     name = data_input(Name, 'Enter the name of the contact whose country address you want to delete')
     if name == 'exit':
-        return 'Command canceled'
+        return 'Command cancelled'
     rec: Record = contact_book.get(str(name))
     return rec.delete_country()
 
@@ -421,7 +421,7 @@ def delete_country_command(*args):
 def delete_city_command(*args):
     name = data_input(Name, 'Enter the name of the contact whose city address you want to delete')
     if name == 'exit':
-        return 'Command canceled'
+        return 'Command cancelled'
     rec: Record = contact_book.get(str(name))
     return rec.delete_city()
 
@@ -430,7 +430,7 @@ def delete_city_command(*args):
 def delete_street_command(*args):
     name = data_input(Name, 'Enter the name of the contact whose street address you want to delete')
     if name == 'exit':
-        return 'Command canceled'
+        return 'Command cancelled'
     rec: Record = contact_book.get(str(name))
     return rec.delete_street()
 
@@ -439,7 +439,7 @@ def delete_street_command(*args):
 def delete_house_command(*args):
     name = data_input(Name, 'Enter the name of the contact whose house address you want to delete')
     if name == 'exit':
-        return 'Command canceled'
+        return 'Command cancelled'
     rec: Record = contact_book.get(str(name))
     return rec.delete_house()
 
