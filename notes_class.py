@@ -60,10 +60,6 @@ class Notebook(UserDict):
 
     def __repr__(self):
         return str(self)
-    
-    """def __eq__(self, other):
-        if isinstance(other, Field):
-            return self.value == other.value"""
         
     def add_note(self, note):
         self.data[note.name.value] = note
@@ -117,7 +113,20 @@ class Notebook(UserDict):
         else:
             print(f"Тег {new_tag.value} вже існує")
     
-    
+    def iterator(self, et_list, n):
+        count = 0
+        page = ""
+
+        for note in et_list:
+            page += (str(note)) + "\n"
+            count += 1
+            if count >= n:
+                yield page
+                count = 0
+                page = ""
+        if page:
+            yield page
+        
     def save_json(self, file_path):
         json_data = {
             "tags": self.tags_list,
