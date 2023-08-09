@@ -73,8 +73,24 @@ def add_phone_command(*args):  # Додаємо номер телефону дл
     name = Name(args[0])
     phone = Phone(args[1])
     rec: Record = contact_book.get(str(name))
-    if rec:
-        return rec.add_phone(phone)
+    return rec.add_phone(phone)
+    
+
+@error_handler
+def change_phone_command(*args):  # Додаємо номер телефону для вибраного користувача.
+    name = Name(args[0])
+    old_phone = Phone(args[1])
+    new_phone = Phone(args[2])
+    rec: Record = contact_book.get(str(name))
+    return rec.change_phone(old_phone, new_phone)
+
+
+@error_handler
+def delete_phone_command(*args):
+    name = Name(args[0])
+    phone = Phone(args[1])
+    rec: Record = contact_book.get(str(name))
+    return rec.delete_phone(phone)
 
 
 @error_handler
@@ -84,15 +100,43 @@ def add_birthday_command(*args):  # додаємо дату народження
     rec: Record = contact_book.get(str(name))
     if rec:
         return rec.add_birthday(birthday)
+    
 
+@error_handler
+def change_birthday_command(*args):
+    name = Name(args[0])
+    birthday = Birthday(args[1])
+    rec: Record = contact_book.get(str(name))
+    return rec.change_birthday(birthday)
+
+
+@error_handler
+def delete_birthday_command(*args):
+    name = Name(args[0])
+    rec: Record = contact_book.get(str(name))
+    return rec.delete_birthday()
 
 @error_handler
 def add_email_command(*args):  # додаємо e-mail для користувача
     name = Name(args[0])
     email = Email(args[1])
     rec: Record = contact_book.get(str(name))
-    if rec:
-        return rec.add_email(email)
+    return rec.add_email(email)
+    
+
+@error_handler
+def change_email_command(*args):
+    name = Name(args[0])
+    email = Email(args[1])
+    rec: Record = contact_book.get(str(name))
+    return rec.change_email(email)
+
+
+@error_handler
+def delete_email_command(*args):
+    name = Name(args[0])
+    rec: Record = contact_book.get(str(name))
+    return rec.delete_email()
 
 
 @error_handler
@@ -152,10 +196,11 @@ user_inputs = ['y', 'yes', '+']  #список з варіантами відп�
 
 exit_inputs = ['exit', 'break', '-'] # список з варіантами відповідей, якщо користувач хоче завершити виконання команди
 
+CHANGING_FUNCS = ['Country', 'City', 'Street', 'House']
 
 def input_checking(func):
     def inner(class_, value):
-        if class_ == Country:
+        if class_ == Country or value in CHANGING_FUNCS:
             address = func(class_, value)
             return address
         print(f'Do you want to include {value}?')
@@ -210,16 +255,81 @@ def add_address(*args):
          
         street = address_input(Street, 'street') #         ^
         if street == 'exit': #                             | (інформація зверху)
-            rec.add_address(country, city, None, house)# |
+            rec.add_address(country, city, None, house)#   |
             return 'Command cancelled' #                   |
     
         house = address_input(House, 'house')#             ^
         if house == 'exit': #                              | (інформація зверху)
-            rec.add_address(country, city, street, None)# |
+            rec.add_address(country, city, street, None)#  |
             return 'Command cancelled' #                   |
             
         return rec.add_address(country, city, street, house) # записуємо адрес до інформації про людину
     return f'There is no contact with name: {name}' #повертаємо інформацію, якщо немає запису з ім'ям, яке ввів користувач
+
+
+@error_handler
+def change_country_command(*args):
+    name = Name(input('Enter the name of the contact: ').strip())
+    rec: Record = contact_book.get(str(name))
+    country = address_input(Country, 'Country') #отримуємо значення, яке користувач хоче додати
+    if country == 'exit': # перевіряємо чи функція повернула нам команду для закінчення додавання адреси
+        return 'Command cancelled'
+    return rec.change_country(country)
+
+
+@error_handler
+def change_city_command(*args):
+    name = Name(input('Enter the name of the contact: ').strip())
+    rec: Record = contact_book.get(str(name))
+    city = address_input(City, 'City')
+    if city == 'exit':
+        return 'command cancelled'
+    return rec.change_city(city)
+
+
+@error_handler
+def change_street_command(*args):
+    name = Name(input('Enter the name of the contact: ').strip())
+    rec: Record = contact_book.get(str(name))
+    street = address_input(Street, 'Street')
+    if street == 'exit':
+        return 'command cancelled'
+    return rec.change_street(street)
+
+
+@error_handler
+def change_house_command(*args):
+    name = Name(input('Enter the name of the contact: ').strip())
+    rec: Record = contact_book.get(str(name))
+    house = address_input(House, 'House')
+    if house == 'exit':
+        return 'command cancelled'
+    return rec.change_house(house)
+
+
+@error_handler
+def delete_country_command(*args):
+    name = Name(args[0])
+    rec: Record = contact_book.get(str(name))
+    return rec.delete_country()
+
+@error_handler
+def delete_city_command(*args):
+    name = Name(args[0])
+    rec: Record = contact_book.get(str(name))
+    return rec.delete_city()
+
+@error_handler
+def delete_street_command(*args):
+    name = Name(args[0])
+    rec: Record = contact_book.get(str(name))
+    return rec.delete_street()
+
+@error_handler
+def delete_house_command(*args):
+    name = Name(args[0])
+    rec: Record = contact_book.get(str(name))
+    return rec.delete_house()
 
     # Додаю функцію для пошуку збігів у contactbook. Повертає список контактів, у яких присутній збіг.
 @error_handler
@@ -241,7 +351,23 @@ HANDLERS = {
     add_birthday_command: ('13', 'add birthday', 'birthday'),
     add_email_command: ('14', 'add email', 'email'),
     add_address: ('15','add address', 'new address',),
-    # Сюди необхідно додати функції на редагування (21-27) та видалення записів (31-37)
+    # редагування записів (21-27) 
+    change_country_command: ('21', 'change country'),
+    change_city_command: ('22', 'change city', 'change town', 'change village'),
+    change_street_command: ('23', 'change street',),
+    change_house_command: ('24', 'change house',),
+    change_phone_command: ('25', 'change phone',),
+    change_birthday_command: ('26', 'change birthday',),
+    change_email_command: ('27', 'change email',),
+    # видалення записів (31-37)
+    delete_phone_command: ('31', 'delete phone', 'remove phone',),
+    delete_birthday_command: ('32', 'delete birthday', 'remove birthday'),
+    delete_email_command: ('33', 'delete email', 'remove email',),
+    delete_country_command: ('34', 'delete country', 'remove country',),
+    delete_city_command: ('35', 'delete city', 'remove city', 'delete town', 'remove town', 'delete village', 'remove village'),
+    delete_street_command: ('36', 'delete street', 'remove street',),
+    delete_house_command: ('37', 'delete house', 'remove house',),
+    # видалення записів (31-37)
     days_to_birthday: ('41', 'days to birthday', 'days to bd'),
     congrats_list_command: ('42', 'upcoming birthdays', 'closest birthdays'),
     birthdays_next_week: ('43', 'next week birthdays', 'next week'),
@@ -262,8 +388,8 @@ def parse_input(user_input):
     for cmd, keywords in HANDLERS.items():
         for kwd in keywords:
             if user_input.lower().startswith(kwd):
-                if cmd in FUNCS_NO_ARGS:
-                    return cmd, user_input
+                # if cmd in FUNCS_NO_ARGS:
+                #     return cmd, user_input
                 data = user_input[len(kwd):].strip().split()
                 return cmd, data
     return unknown_command, []

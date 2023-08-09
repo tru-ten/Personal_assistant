@@ -124,14 +124,17 @@ class House(Field):
 
 
 class Record:
-    def __init__(self, name: Name, phone: Phone = None, birthday: Birthday = None, email: Email = None) -> None:
+    def __init__(self, name: Name, phone: Phone = None, birthday: Birthday = None, email: Email = None, country: Country = None, city: City = None, street: Street = None, house: House = None) -> None:
         self.name = name
         self.phones = []
         if phone:
             self.phones.append(phone)
         self.birthday = birthday
         self.email = email
-        self.address = ''
+        self.country = country
+        self.city = city
+        self.street = street
+        self.house = house
 
     def add_user(self, name: Name):
         if not name.value:
@@ -146,19 +149,64 @@ class Record:
             return f"phone {phone} was added to contact {self.name}"
         return f"phone: {phone} is already registered for user {self.name}"
 
+
+    def change_phone(self, old_phone: Phone, new_phone: Phone):
+        for idx, p in enumerate(self.phones):
+            if old_phone.value == p.value:
+                self.phones[idx] = new_phone
+                return f'Old phone: {old_phone} was changed to new: {new_phone}'
+        return f"Phone: {old_phone} is not present in {self.name}'s phones" 
+    
+
+    def delete_phone(self, phone):
+        for p in self.phones:
+            if phone.value == p.value:
+                self.phones.remove(p)
+                return f'Phone: {phone} in contact {self.name} was deleted successfully'
+        return f"Phone: {phone} is not present in {self.name}'s list of phones"
+
     # Функція додає дату народження користувача. Враховано, що дата народження не може бути у майбутньому.
     def add_birthday(self, birthday: Birthday):
         if self.birthday:
             return f'Birthday for user {self.name} already exists. Use command "change birthday".'
-        else:
-            self.birthday = birthday
-            return f'Birthday for user {self.name} was added successfully.'
+        self.birthday = birthday
+        return f'Birthday for user {self.name} was added successfully.'
+        
+
+    def change_birthday(self, birthday: Birthday):
+        if not self.birthday:
+            return f'Birthday for contact {self.name} is not included. Use command "add birthday".'
+        self.birthday = birthday
+        return f'Birthday for contact {self.name} was changed successfully'
+    
+
+    def delete_birthday(self):
+        if not self.birthday:
+            return f"You haven't included birthday for contact {self.name} yet"
+        self.birthday = None
+        return f'Birthday for contact {self.name} was successfully deleted'
 
     # Функція додає email користувача. Перевірка на правильність прописана у класі Email.
     def add_email(self, email: Email):
-        self.email = email
-        return f'E-mail for user {self.name} was added successfully'
+        if not self.email:
+            self.email = email
+            return f'E-mail for user {self.name} was added successfully'
+        return 'Email for contact {self.name} already exists. Use command "change email"'
     
+
+    def change_email(self, email: Email):
+        if not self.email:
+            return f'Email for contact {self.name} is not included. Use command "add email".'
+        self.email = email
+        return f'Email for contact {self.name} was changed successfully'
+    
+    def delete_email(self):
+        if not self.email:
+            return f"You haven't included birthday for contact {self.name} yet"
+        self.email = None
+        return f'Email for contact {self.name} was deleted successfully'
+    
+
     def days_to_birthday(self):  # Функція повертає кількість днів до дня народження користувача.
         if not self.birthday:
             return f'No data for birthday of user {self.name}'
@@ -189,13 +237,58 @@ class Record:
         return diff_days
     
     def add_address(self, country: Country, city: City = None, street: Street = None, house: House = None):
-        self.address = f'{country.value}/{city.value if city != None else "empty"}/{street.value if street != None else "empty"}/{house.value if house != None else "empty"}'
-        return 'Success'
+        self.country = country
+        self.city = city
+        self.street = street
+        self.house = house
+        return f'Address for user {self.name} was added successfully'
     # метод добавляє адресу проживання у поле self.address
         
+
+    def change_country(self, country: Country):
+        self.country = country
+        return f'Country address for user {self.name} was changed successfully'
+    
+    def delete_country(self):
+        if not self.country:
+            return 'You have not included country address yet'
+        self.country = None
+        return f'Country address for contact {self.name} was deleted successfully'
+    
+    def change_city(self, city: City):
+        self.city = city
+        return f'City address for user {self.name} was changed successfully'
+    
+    def delete_city(self):
+        if not self.city:
+            return 'You have not included city address yet'
+        self.city = None
+        return f'City address for contact {self.name} was deleted successfully'
+    
+    def change_street(self, street: Street):
+        self.street = street
+        return f'Street address for user {self.name} was changed successfully'
+    
+    def delete_street(self):
+        if not self.street:
+            return 'You have not included street address yet'
+        self.street = None
+        return f'Street address for contact {self.name} was deleted successfully'
+
+    def change_house(self, house: House):
+        self.house = house
+        return f'House address for user {self.name} was changed successfully'
+    
+    def delete_house(self):
+        if not self.house:
+            return 'You have not included house address yet'
+        self.house = None
+        return f'House address for contact {self.name} was deleted successfully'
+
+
     def __str__(self) -> str:
         return f"User: {self.name} | phones: {', '.join(str(p) for p in self.phones)} | birthday: {self.birthday} " \
-               f"| email: {self.email} | address: {self.address} "    
+               f"| email: {self.email} | address: {self.country}/{self.city}/{self.street}/{self.house}"    
     # Рядкове представлення для одного запису у contact_book
 
 class AddressBook(UserDict):
