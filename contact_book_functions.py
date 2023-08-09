@@ -69,6 +69,19 @@ def add_user_command(*args):
 
 
 @error_handler
+def change_user_command(*args):
+    name = Name(args[0])
+    new_name = Name(args[1])
+    return contact_book.change_rec_name(name, new_name)
+
+
+@error_handler
+def delete_rec_command(*args):
+    name = Name(args[0])
+    return contact_book.delete_rec(name)
+
+
+@error_handler
 def add_phone_command(*args):  # Додаємо номер телефону для вибраного користувача.
     name = Name(args[0])
     phone = Phone(args[1])
@@ -351,22 +364,24 @@ HANDLERS = {
     add_birthday_command: ('13', 'add birthday', 'birthday'),
     add_email_command: ('14', 'add email', 'email'),
     add_address: ('15','add address', 'new address',),
-    # редагування записів (21-27) 
-    change_country_command: ('21', 'change country'),
-    change_city_command: ('22', 'change city', 'change town', 'change village'),
-    change_street_command: ('23', 'change street',),
-    change_house_command: ('24', 'change house',),
-    change_phone_command: ('25', 'change phone',),
-    change_birthday_command: ('26', 'change birthday',),
-    change_email_command: ('27', 'change email',),
-    # видалення записів (31-37)
-    delete_phone_command: ('31', 'delete phone', 'remove phone',),
-    delete_birthday_command: ('32', 'delete birthday', 'remove birthday'),
-    delete_email_command: ('33', 'delete email', 'remove email',),
-    delete_country_command: ('34', 'delete country', 'remove country',),
-    delete_city_command: ('35', 'delete city', 'remove city', 'delete town', 'remove town', 'delete village', 'remove village'),
-    delete_street_command: ('36', 'delete street', 'remove street',),
-    delete_house_command: ('37', 'delete house', 'remove house',),
+    # редагування записів (21-28) 
+    change_user_command: ('21', 'change user', 'change name'),
+    change_phone_command: ('22', 'change phone',),
+    change_birthday_command: ('23', 'change birthday',),
+    change_email_command: ('24', 'change email',),
+    change_country_command: ('25', 'change country'),
+    change_city_command: ('26', 'change city', 'change town', 'change village'),
+    change_street_command: ('27', 'change street',),
+    change_house_command: ('28', 'change house',),
+    # видалення записів (31-38)
+    delete_rec_command: ('31', 'delete user', 'delete contact',),
+    delete_phone_command: ('32', 'delete phone', 'remove phone',),
+    delete_birthday_command: ('33', 'delete birthday', 'remove birthday'),
+    delete_email_command: ('34', 'delete email', 'remove email',),
+    delete_country_command: ('35', 'delete country', 'remove country',),
+    delete_city_command: ('36', 'delete city', 'remove city', 'delete town', 'remove town', 'delete village', 'remove village'),
+    delete_street_command: ('37', 'delete street', 'remove street',),
+    delete_house_command: ('38', 'delete house', 'remove house',),
     # видалення записів (31-37)
     days_to_birthday: ('41', 'days to birthday', 'days to bd'),
     congrats_list_command: ('42', 'upcoming birthdays', 'closest birthdays'),

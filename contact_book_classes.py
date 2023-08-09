@@ -142,6 +142,10 @@ class Record:
             return f"Record for user {name} was created"
         return f"Record for user {name} already exist in this address book"
     
+    # def change_user(self, old_name: Name, new_name):
+    #     self.name = new_name
+    #     return f'Name for user {old_name} was changed to {new_name}'
+    
     # Функція додає телефон до списку телефонів користувача. Перевіряє чи вже введено такий телефон раніше.
     def add_phone(self, phone: Phone) -> None:
         if phone.value not in [phone_.value for phone_ in self.phones]:
@@ -295,6 +299,22 @@ class AddressBook(UserDict):
     def add_record(self, record: Record):
         self.data[str(record.name)] = record
         return f"Contact {record.name} was added successfully"
+    
+    def change_rec_name(self, old_name: Name, new_name: Name):
+        for key in self.data.keys():
+            if key == old_name.value:
+                old_rec = self.data.pop(key)
+                old_rec.name = new_name
+                self.data.update({str(new_name): old_rec})
+                return f'Contact with name {old_name} was changed to name {new_name}'
+        return f'There is not contact with name: {old_name}'
+    
+    def delete_rec(self, name: Name):
+        for key in self.data.keys():
+            if str(key) == name.value:
+                self.data.pop(key)
+                return f'Contact with name: {name} was deleted successfully'
+        return f'There is not contact with name: {name}'
     
     def save_to_file(self, filename):
         with open(filename, mode="wb") as file:
