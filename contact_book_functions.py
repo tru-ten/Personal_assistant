@@ -59,7 +59,7 @@ def helper(*args):
 @error_handler
 def exit_command(*args):
     contact_book.save_to_file(filename) 
-    return 'Bye. Have a nice day. See you next time.'
+    return 'Bye. Have a nice day. See you next time.\n'
 
 
 @error_handler

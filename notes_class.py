@@ -183,6 +183,6 @@ class Notebook(UserDict):
                     self.data[name.value] = note
                 self.tags_list = data["tags"]
         except (FileNotFoundError):
-            print(f"The file {file_path} is missing or does not contain valid JSON data.")
+            print(f"\nThe file {file_path} is missing or does not contain valid JSON data.")
             Notebook.save_json(self, file_path)
             print("Notebook.json file is created")

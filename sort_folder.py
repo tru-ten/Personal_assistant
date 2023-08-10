@@ -118,22 +118,22 @@ class Sorter:
 
 
 def main():
-    str_path = input("Enter path to folder to sort: ")
+    str_path = input("\nEnter path to folder to sort: ")
     path = pathlib.Path(str_path)
     if not path.exists():
         return f"Folder with path {path} doesn't exist"
     really = input(
-        f"Do you really want to sort folder {path.absolute()}? (y/n)")
+        f"\nDo you really want to sort folder {path.absolute()}? (y/n):")
     if really.lower() != "y":
-        return "Sort interrupted"
+        return "\nSort interrupted\n"
     sorter = Sorter(path)
     sorter.sort()
     if sorter.contains_archives:
-        to_unpack = input("\nDo you want to unpack archives? (y/n)")
+        to_unpack = input("\nDo you want to unpack archives? (y/n):")
         if to_unpack.lower() == "y":
             sorter.unpack_archives()
     sorter.print_result()
-    return "Ok"
+    return "\nOk\n"
 
 
 if __name__ == "__main__":
