@@ -1,6 +1,6 @@
-from contact_book_main import main as main_contactbook
-from notes_main import main as main_notebook
-from sort_folder import main as main_sorter
+from triton.contact_book_main import main as main_contactbook
+from triton.notes_main import main as main_notebook
+from triton.sort_folder import main as main_sorter
 
 invitation_text = '''\nHello! I'm TRITON!!!\nI will help you organise your work!\nLet's start and enjoy!!!'''
 main_menu_text = '''\nYou're on Main Menu now.
