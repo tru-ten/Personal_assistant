@@ -133,7 +133,8 @@ class House(Field):
 
 
 class Record:
-    def __init__(self, name: Name, phone: Phone = None, birthday: Birthday = None, email: Email = None, country: Country = None, city: City = None, street: Street = None, house: House = None) -> None:
+    def __init__(self, name: Name, phone: Phone = None, birthday: Birthday = None, email: Email = None, 
+                 country: Country = None, city: City = None, street: Street = None, house: House = None) -> None:
         self.name = name
         self.phones = []
         if phone:
@@ -145,13 +146,11 @@ class Record:
         self.street = street
         self.house = house
 
-
     def add_user(self, name: Name):
         if not name.value:
             self.name = name
             return f"Record for user {name} was created"
         return f"Record for user {name} already exist in this address book"
-
     
     # Функція додає телефон до списку телефонів користувача. Перевіряє чи вже введено такий телефон раніше.
     def add_phone(self, phone: Phone) -> None:
@@ -160,7 +159,6 @@ class Record:
             return f"phone {phone} was added to contact {self.name}"
         return f"phone: {phone} is already registered for user {self.name} and you can add only 5 phone numbers"
 
-
     def change_phone(self, old_phone: Phone, new_phone: Phone):
         for idx, p in enumerate(self.phones):
             if old_phone.value == p.value:
@@ -168,14 +166,12 @@ class Record:
                 return f'Old phone: {old_phone} was changed to new: {new_phone}'
         return f"Phone: {old_phone} is not present in {self.name}'s phones" 
     
-
     def delete_phone(self, phone):
         for p in self.phones:
             if phone.value == p.value:
                 self.phones.remove(p)
                 return f'Phone: {phone} in contact {self.name} was deleted successfully'
         return f"Phone: {phone} is not present in {self.name}'s list of phones"
-
 
     # Функція додає дату народження користувача. Враховано, що дата народження не може бути у майбутньому.
     def add_birthday(self, birthday: Birthday):
@@ -184,18 +180,15 @@ class Record:
         self.birthday = birthday
         return f'Birthday for user {self.name} was added successfully.'
         
-
     def change_birthday(self, birthday: Birthday):
         self.birthday = birthday
         return f'Birthday for contact {self.name} was changed successfully'
     
-
     def delete_birthday(self):
         if not self.birthday:
             return f"You haven't included birthday for contact {self.name} yet"
         self.birthday = None
         return f'Birthday for contact {self.name} was successfully deleted'
-
 
     # Функція додає email користувача. Перевірка на правильність прописана у класі Email.
     def add_email(self, email: Email):
@@ -204,25 +197,26 @@ class Record:
             return f'E-mail for user {self.name} was added successfully'
         return 'Email for contact {self.name} already exists. Use command "change email"'
     
-
     def change_email(self, email: Email):
         self.email = email
         return f'Email for contact {self.name} was changed successfully'
     
-
     def delete_email(self):
         if not self.email:
             return f"You haven't included birthday for contact {self.name} yet"
         self.email = None
         return f'Email for contact {self.name} was deleted successfully'
     
-
     def days_to_birthday(self):  # Функція повертає кількість днів до дня народження користувача.
         if not self.birthday:
             return f'No data for birthday of user {self.name}'
         today = datetime.now().date()
-        bd_current_year = self.birthday.value.replace(year=today.year)
-        bd_next_year = self.birthday.value.replace(year=today.year + 1)
+        try:
+            bd_current_year = self.birthday.value.replace(year=today.year)
+            bd_next_year = self.birthday.value.replace(year=today.year + 1)
+        except ValueError:
+            bd_current_year = self.birthday.value.replace(today.year, 2, 28)
+            bd_next_year = self.birthday.value.replace(today.year + 1, 2, 28)
         diff_years = today.year - self.birthday.value.year
         if (bd_current_year - today).days == 0:
             return f"Today {self.name} celebrate {diff_years} birthday. Don't forget to buy a gift."
@@ -232,13 +226,16 @@ class Record:
         diff_days = (bd_next_year - today).days
         return f"There are {diff_days} days left until the {self.name}'s {diff_years + 1} birthday"
     
-
     def days_to_birthday_int_numbers(self) -> int:  # Функція повертає кількість днів до дня народження користувача.
         if not self.birthday:
             return -1 # якщо дати народження нема, то повертає -1
         today = datetime.now().date()
-        bd_current_year = self.birthday.value.replace(year=today.year)
-        bd_next_year = self.birthday.value.replace(year=today.year + 1)
+        try:
+            bd_current_year = self.birthday.value.replace(year=today.year)
+            bd_next_year = self.birthday.value.replace(year=today.year + 1)
+        except ValueError:
+            bd_current_year = self.birthday.value.replace(today.year, 2, 28)
+            bd_next_year = self.birthday.value.replace(today.year + 1, 2, 28)
         if (bd_current_year - today).days == 0:
             return 0
         elif (bd_current_year - today).days > 0:
@@ -247,7 +244,6 @@ class Record:
         diff_days = (bd_next_year - today).days
         return diff_days
     
-
     def add_address(self, country: Country, city: City = None, street: Street = None, house: House = None):
         self.country = country
         self.city = city
@@ -255,8 +251,7 @@ class Record:
         self.house = house
         return f'Address for user {self.name} was added successfully'
     # метод добавляє адресу проживання у поле self.address
-    
-    
+        
     def how_much_user_live(self) -> int:
         if not self.birthday:
             return -1
@@ -265,60 +260,56 @@ class Record:
             living_days = (today - self.birthday.value).days
             return living_days
         
-
     def change_country(self, country: Country):
         self.country = country
         return f'Country address for user {self.name} was changed successfully'
     
-
     def delete_country(self):
         if not self.country:
             return 'You have not included country address yet'
         self.country = None
         return f'Country address for contact {self.name} was deleted successfully'
     
-
     def change_city(self, city: City):
         self.city = city
         return f'City address for user {self.name} was changed successfully'
     
-
     def delete_city(self):
         if not self.city:
             return 'You have not included city address yet'
         self.city = None
         return f'City address for contact {self.name} was deleted successfully'
     
-
     def change_street(self, street: Street):
         self.street = street
         return f'Street address for user {self.name} was changed successfully'
     
-
     def delete_street(self):
         if not self.street:
             return 'You have not included street address yet'
         self.street = None
         return f'Street address for contact {self.name} was deleted successfully'
 
-
     def change_house(self, house: House):
         self.house = house
         return f'House address for user {self.name} was changed successfully'
     
-
     def delete_house(self):
         if not self.house:
             return 'You have not included house address yet'
         self.house = None
         return f'House address for contact {self.name} was deleted successfully'
       
-
     # Рядкове представлення для одного запису у contact_book
     def __str__(self) -> str:
-        return f"User: {self.name} | phones: {', '.join(str(p) for p in self.phones)} | birthday: {self.birthday if self.birthday != None else ''} " \
-               f"| email: {self.email if self.email != None else ''} | address: {self.country}/{self.city}/{self.street}/{self.house} "    
-
+        return f"User: {self.name} \
+| phones: {', '.join(str(p) for p in self.phones)} \
+| birthday: {self.birthday if self.birthday != None else ''} \
+| email: {self.email if self.email != None else ''} \
+| address: {self.country if self.country != None else ''}\
+/{self.city if self.city != None else ''}\
+/{self.street if self.street != None else ''}\
+/{self.house if self.house != None else ''} "    
 
 
 class AddressBook(UserDict):
@@ -327,7 +318,6 @@ class AddressBook(UserDict):
         self.data[str(record.name)] = record
         return f"Contact {record.name} was added successfully"
     
-
     def change_rec_name(self, old_name: Name, new_name: Name):
         for key in self.data.keys():
             if key == old_name.value:
@@ -337,7 +327,6 @@ class AddressBook(UserDict):
                 return f'Contact with name {old_name} was changed to name {new_name}'
         return f'There is not contact with name: {old_name}'
     
-
     def delete_rec(self, name: Name):
         for key in self.data.keys():
             if str(key) == name.value:
@@ -345,12 +334,10 @@ class AddressBook(UserDict):
                 return f'Contact with name: {name} was deleted successfully'
         return f'There is not contact with name: {name}'
     
-
     def save_to_file(self, filename):
         with open(filename, mode="wb") as file:
             pickle.dump(self.data, file)
             print("\nContack book has saved.")
-
 
     def load_from_file(self, filename):
         try:
@@ -361,7 +348,6 @@ class AddressBook(UserDict):
             with open(filename, 'wb') as f:
                 self.data = {}
                 pickle.dump(self.data, f)
-
 
     def search_match(self, match):
         found_match = []
@@ -374,7 +360,6 @@ class AddressBook(UserDict):
             print(f"\nWe found matches for '{match}' in {len(found_match)} contacts in whole contactbook: ")
             return '\n'.join(el for el in found_match)
     
-
     def congrats_list(self, shift_days, record: Record = None):
         congrats_dict = {}
         for record in self.data.values():
@@ -398,7 +383,6 @@ class AddressBook(UserDict):
             print(f'\n{len(congrats_dict)} users are celebrating their birthday in the next {shift_days} days: ')
             return '\n'.join(el for el in congrats_list)
         
-
     def next_week_birthdays(self):
         next_week_dict = {}
         today = datetime.now().date().weekday()
@@ -423,7 +407,6 @@ class AddressBook(UserDict):
             print(f'\n{len(congrats_list)} users are celebrating their birthday in the next week: ')
             return '\n'.join(el for el in congrats_list)
         
-
     def current_week_birthdays(self):
         current_week_dict = {}
         today = datetime.now().date().weekday()
@@ -436,7 +419,7 @@ class AddressBook(UserDict):
             new_dict[res].append(rec)
         sorted_list = sorted(new_dict.items())
         if len(current_week_dict) == 0:
-            return f'No users are celebrating birthday in the next week'
+            return f'No users are celebrating birthday in the current week'
         else:
             almost_list = []
             for el in sorted_list:
@@ -445,9 +428,8 @@ class AddressBook(UserDict):
             for lst in almost_list:
                 for el in lst:
                     congrats_list.append(el)
-            print(f'\n{len(congrats_list)} users are celebrating their birthday in the next week: ')
+            print(f'\n{len(congrats_list)} users are celebrating their birthday in the current week: ')
             return '\n'.join(el for el in congrats_list)
-
 
     def next_month_birthdays(self, record: Record = None):
         next_month_dict = {}
@@ -483,7 +465,6 @@ class AddressBook(UserDict):
             print(f'\n{len(congrats_list)} users are celebrating their birthday in the next month: ')
             return '\n'.join(el for el in congrats_list)
         
-
     def current_month_birthdays(self, record: Record = None):
         current_month_dict = {}
         current_month = datetime.now().date().month
@@ -514,6 +495,7 @@ class AddressBook(UserDict):
         contactbook_dict = {}
         for record in self.data.values():
             contactbook_dict[record.name.value] = str(record)
+        print('\nYour contactbook is sorted due to the name of users: \n')
         return '\n'.join(el for el in sorted(contactbook_dict.values()))
     
     def sort_by_age(self, record: Record=None):  # Функція сортує contactbook по віку користувача.
@@ -549,10 +531,8 @@ class AddressBook(UserDict):
         print('\nYour contactbook is sorted due to the age of users: \n')
         return '\n'.join(el for el in contactbook_list)
 
-
     def __repr__(self):
         return str(self)
-
 
     def __str__(self) -> str:  # Рядкове представлення для усіх записів у contact_book
         return "\n".join(str(r) for r in self.data.values())
