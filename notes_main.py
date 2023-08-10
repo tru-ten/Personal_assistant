@@ -220,7 +220,7 @@ def show_comand(et_list, n):
 
 def main(): #
     note_book.load_json('notebook.json')
-    print("> Notebook data loaded.")
+    print("\n> Notebook data loaded.")
 
     while True:
         print(f"\n{'Notebook menu:':.^40}"
@@ -249,7 +249,7 @@ def main(): #
 
         elif user_input == 5:
             note_book.save_json('notebook.json')
-            print("> Notebook data saved.")
+            print("> Notebook data saved.\n")
             break
 
         else:
