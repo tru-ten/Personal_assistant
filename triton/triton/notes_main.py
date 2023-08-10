@@ -1,4 +1,4 @@
-from notes_class import Notebook, Note, Field, Tag
+from triton.notes_class import Notebook, Note, Field, Tag
 
 note_book = Notebook()
 

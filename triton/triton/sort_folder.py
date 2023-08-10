@@ -1,5 +1,5 @@
 import pathlib
-from normalize import normalize
+from triton.normalize import normalize
 import shutil
 
 EXTENSIONS = {"images": [".jpg", ".gif", ".png", ".jpeg", ".svg"],

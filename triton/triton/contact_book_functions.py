@@ -1,5 +1,5 @@
 # Внаслідок перейменування пакетів оновлено імпорт пакетів
-from contact_book_classes import AddressBook, Name, Phone, Birthday, Record, Email, Country, City, Street, House
+from triton.contact_book_classes import AddressBook, Name, Phone, Birthday, Record, Email, Country, City, Street, House
 import time
 import difflib
 
