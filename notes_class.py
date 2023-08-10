@@ -41,7 +41,8 @@ class Note:
     def __str__(self):
         if self.tags is None:
             self.tags = ""
-        return f"'{self.name.value}' {self.content.value} (tegs: {', '.join(tag.value for tag in self.tags)}) status: {str(self.status)} "
+        tags_str = ', '.join(tag.value for tag in self.tags)
+        return f"'{self.name.value}' {self.content.value} (tegs: {tags_str}) status: {str(self.status)} "
     
     def add_tag_in_tags(self, tag):
         if tag not in self.tags:
@@ -50,7 +51,11 @@ class Note:
             print(f"Tag {tag} already exists")
     
     def remove_tag(self, tag):
-        self.tags.remove(tag)
+        try:
+            self.tags.remove(tag)
+        except ValueError:
+            print('There is no such tag in this note\n')
+
 
 class Notebook(UserDict):
     def __init__(self):
@@ -83,7 +88,10 @@ class Notebook(UserDict):
         print(f"Note updated: {note}")
 
     def edit_status_in_note(self, note):
-        setattr(note, "status", False) 
+        if note.status == True:
+            setattr(note, "status", False) 
+        else:
+            setattr(note, "status", True) 
         print(f"Note status updated: {note}")
 
     def sort_by_tags(self):

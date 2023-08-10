@@ -48,14 +48,14 @@ def content_note(note):
     elif option == 3:
         return note_book.edit_status_in_note(note) 
     elif option == 4:
-        return
+        return ' '
 
 def search_tags(note):
     search = input("Enter value for tags field (format input: text) >>> ")
     tag_list = note_book.search_in_tags(search)
     tag = numerator(tag_list)
     if tag:  
-        print(f"знайдено тег {tag}")
+        print(f"tag {tag} found")
         return tag
     else:
         print("No search results found"
@@ -75,6 +75,9 @@ def add_tag_in_note(tag_name, note):
 
 def search_tag_in_tegs():
     list_tags = note_book.get_tag_values()
+    if len(list_tags) == 0:
+        tag = ' '
+        return tag
     tag = numerator(list_tags)
     return tag
 
@@ -94,8 +97,10 @@ def edit_tag(note):
                 note.remove_tag(tag)
         elif option == 2:  
             tag_search = search_tags(note)
-            tag = Tag(tag_search)    
-            note.add_tag_in_tags(tag)     
+            print(tag_search)
+            if tag_search != None:
+                tag = Tag(tag_search) 
+                note.add_tag_in_tags(tag)     
         elif option == 3:
             return content_note(note)
 
@@ -106,13 +111,13 @@ def edit_note(option, note):
         return print("> Error: Invalid search parameter selected")    
     if not search_params:
         return print("> Error: Invalid search parameter selected")  
-    input_content = input(f"Enter search value for {search_params[0]} (format input: {search_params[1]}) >>> ")
-    new_value = Field(input_content)
-    note_book.edit_in_note(note, search_params[0], new_value)
     if search_params[0] == "tags":
         return edit_tag(note)
     if search_params[0] == "status":
         return note_book.edit_status_in_note(note) 
+    input_content = input(f"Enter search value for {search_params[0]} (format input: {search_params[1]}) >>> ")
+    new_value = Field(input_content)
+    note_book.edit_in_note(note, search_params[0], new_value)
 
 def search_note(option, note):
     try:
@@ -157,6 +162,9 @@ def add_note():
         if option == 1:
             tag = search_tag_in_tegs()
             if tag is not None:
+                if tag == ' ':
+                    print('The tag list is empty\n')
+                    break
                 tag = Tag(tag) 
                 if tag not in note.tags:
                     note.add_tag_in_tags(tag)
