@@ -44,9 +44,7 @@ def content_note(note):
     elif option == 2:
         return note_menu("Notes Editor", edit_note, note)
     elif option == 3:
-        return note_book.edit_status_in_note(note) 
-    elif option == 4:
-        return ' '
+        return
 
 def search_tags(note):
     search = input("Enter value for tags field (format input: text) >>> ")

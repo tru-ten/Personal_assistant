@@ -102,10 +102,11 @@ class Notebook(UserDict):
         print(f"Note updated: {note}")
 
     def edit_status_in_note(self, note):
-        if note.status == True:
-            setattr(note, "status", False) 
+        if note.status:
+            status = False
         else:
-            setattr(note, "status", True) 
+            status = True
+        setattr(note, "status", status) 
         print(f"Note status updated: {note}")
 
     def sort_by_tags(self):
@@ -134,6 +135,9 @@ class Notebook(UserDict):
                 tags.append(tag)
         return tags
     
+    def get_tag_values(self):
+        return self.tags_list
+
     def iterator(self, et_list, n):
         count = 0
         page = ""
