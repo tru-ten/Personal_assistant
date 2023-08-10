@@ -25,7 +25,10 @@ class Field:
 
 
 class Tag(Field):
-    ...
+    
+    def __str__(self):
+        return str(self.value)
+    
 
 
 class Note:
@@ -38,19 +41,30 @@ class Note:
             self.tags.append(tag)
         self.status = True
 
+
     def __str__(self):
         if self.tags is None:
             self.tags = ""
         return f"'{self.name.value}' {self.content.value} (tegs: {', '.join(tag.value for tag in self.tags)}) status: {str(self.status)} "
-    
+
     def add_tag_in_tags(self, tag):
         if tag not in self.tags:
             self.tags.append(tag)
         else:
             print(f"Tag {tag} already exists")
     
+    def delete_tag_from_note(self, note, tag):
+        note.tags.remove(tag)
+        print(f"Tag {tag} deleted from note {note.name}")
+    
     def remove_tag(self, tag):
         self.tags.remove(tag)
+    
+    def get_tag_values(self):
+        return self.tags_list
+    
+    def get_tags(note):
+        return note.tags
 
 class Notebook(UserDict):
     def __init__(self):
@@ -62,6 +76,7 @@ class Notebook(UserDict):
 
     def __repr__(self):
         return str(self)
+    
         
     def add_note(self, note):
         self.data[note.name.value] = note
@@ -83,7 +98,11 @@ class Notebook(UserDict):
         print(f"Note updated: {note}")
 
     def edit_status_in_note(self, note):
-        setattr(note, "status", False) 
+        if note.status:
+            status = False
+        else:
+            status = True
+        setattr(note, "status", status) 
         print(f"Note status updated: {note}")
 
     def sort_by_tags(self):
@@ -94,9 +113,16 @@ class Notebook(UserDict):
     def add_tag_note(self, new_tag):
         if new_tag.value not in self.tags_list:
             self.tags_list.append(new_tag.value)
-            print(f"Тег {new_tag.value} додано")
+            print(f"Tag {new_tag.value} added")
         else:
-            print(f"Тег {new_tag.value} вже існує")
+            print(f"Tag {new_tag.value} already exists")
+    
+    def delete_tag_from_note(self, note, tag):
+        if tag in note.tags:
+            note.tags.remove(tag)
+            print(f"Tag {tag} deleted from note {note.name}")
+        else:
+            print(f"Tag {tag} not found in note {note.name}")
     
     def search_in_tags(self, search):
         tags = []
@@ -105,8 +131,6 @@ class Notebook(UserDict):
                 tags.append(tag)
         return tags
     
-    def get_tag_values(self):
-        return self.tags_list
     
     def iterator(self, et_list, n):
         count = 0
@@ -153,5 +177,6 @@ class Notebook(UserDict):
                     self.data[name.value] = note
                 self.tags_list = data["tags"]
         except (FileNotFoundError):
-            Notebook.save_json(self, file_path)
             print(f"The file {file_path} is missing or does not contain valid JSON data.")
+            Notebook.save_json(self, file_path)
+            print("Notebook.json file is created")
