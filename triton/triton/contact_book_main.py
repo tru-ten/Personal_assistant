@@ -1,5 +1,5 @@
 # Внаслідок перейменування пакетів оновлено імпорт пакетів
-from contact_book_functions import parse_input, exit_command, start
+from triton.contact_book_functions import parse_input, exit_command, start
 
 
 def main():
