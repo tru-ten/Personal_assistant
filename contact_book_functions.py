@@ -96,10 +96,13 @@ def add_email_command(*args):  # додаємо e-mail для користува
 
 
 @error_handler
-def days_to_birthday(*args):  # Повертає кількість днів до дня народження користувача.
-    name = Name(args[0])
+def days_to_birthday():  # Повертає кількість днів до дня народження користувача.
+    name = Name(input('Enter name of the user: '))
     rec: Record = contact_book.get(str(name))
-    return rec.days_to_birthday()
+    if rec:
+        return rec.days_to_birthday()
+    else:
+        return f"User '{name}' doesn't exist. First create a record about this user." 
 
 
 @error_handler
@@ -132,6 +135,34 @@ def birthdays_next_month():  # Користувачі, котрі святкую
 @error_handler
 def birthdays_current_month():  # Користувачі, котрі святкують ДН поточного місяця.
     return contact_book.current_month_birthdays()
+
+
+@error_handler
+def how_long_user_live_command():  # Функція повертає кількість прожитих днів користувачем.
+    name = Name(input('Enter name of the user: '))
+    rec: Record = contact_book.get(str(name))
+    if rec:
+        res = rec.how_much_user_live()
+        if res == -1:
+            return f'No data for birthday of user {name}'
+        elif res <= -2:
+            return f"Wrong data about user {name} birthday. The user has not been born yet."
+        elif res >= 35000:
+            return f"User {name} has already lived {res} days. Or maybe he's already dead?"
+        else:
+            return f"User {name} has already lived {res} days"
+    else:
+        return f"User '{name}' doesn't exist. First create a record about this user." 
+
+
+@error_handler
+def sort_by_name_command():
+    return contact_book.sort_by_name()
+
+
+@error_handler
+def sort_by_age_command():
+    return contact_book.sort_by_age()
 
 
 @error_handler
@@ -241,13 +272,15 @@ HANDLERS = {
     add_birthday_command: ('13', 'add birthday', 'birthday'),
     add_email_command: ('14', 'add email', 'email'),
     add_address: ('15','add address', 'new address',),
-    # Сюди необхідно додати функції на редагування (21-27) та видалення записів (31-37)
     days_to_birthday: ('41', 'days to birthday', 'days to bd'),
     congrats_list_command: ('42', 'upcoming birthdays', 'closest birthdays'),
     birthdays_next_week: ('43', 'next week birthdays', 'next week'),
     birthdays_current_week: ('44', 'current week birthdays', 'current week'),
     birthdays_next_month: ('45', 'next month birthdays', 'next month'),
     birthdays_current_month: ('46', 'current month birthdays', 'current month'),
+    how_long_user_live_command: ('47', 'how long user live'),
+    sort_by_name_command: ('51', 'sort by name'),
+    sort_by_age_command: ('53', 'sort by age'),
     show_all_command: ('55', 'show all', 'all phones', 'addressbook', 'contactbook', 'ірщц фдд'),
     show_user_command: ('66', 'show user', 'phone', 'number', 'show'),
     search_command: ('77', 'search', 'find', 'match', 'іуфкср', 'аштв', 'ьфеср'),

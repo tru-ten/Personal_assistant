@@ -1,4 +1,4 @@
-from collections import UserDict
+from collections import UserDict, defaultdict
 from datetime import datetime
 import pickle  # модуль для зберігання та читання інформації.
 import re
@@ -165,7 +165,7 @@ class Record:
         today = datetime.now().date()
         bd_current_year = self.birthday.value.replace(year=today.year)
         bd_next_year = self.birthday.value.replace(year=today.year + 1)
-        diff_years = today.year - self.birthday.value.year 
+        diff_years = today.year - self.birthday.value.year
         if (bd_current_year - today).days == 0:
             return f"Today {self.name} celebrate {diff_years} birthday. Don't forget to buy a gift."
         elif (bd_current_year - today).days > 0:
@@ -192,11 +192,20 @@ class Record:
         self.address = f'{country.value}/{city.value if city != None else "empty"}/{street.value if street != None else "empty"}/{house.value if house != None else "empty"}'
         return 'Success'
     # метод добавляє адресу проживання у поле self.address
-        
-    def __str__(self) -> str:
-        return f"User: {self.name} | phones: {', '.join(str(p) for p in self.phones)} | birthday: {self.birthday} " \
-               f"| email: {self.email} | address: {self.address} "    
+    
+    def how_much_user_live(self) -> int:
+        if not self.birthday:
+            return -1
+        else:
+            today = datetime.now().date()
+            living_days = (today - self.birthday.value).days
+            return living_days
+
     # Рядкове представлення для одного запису у contact_book
+    def __str__(self) -> str:
+        return f"User: {self.name} | phones: {', '.join(str(p) for p in self.phones)} | birthday: {self.birthday if self.birthday != None else ''} " \
+               f"| email: {self.email if self.email != None else ''} | address: {self.address} "    
+
 
 class AddressBook(UserDict):
     def add_record(self, record: Record):
@@ -206,13 +215,13 @@ class AddressBook(UserDict):
     def save_to_file(self, filename):
         with open(filename, mode="wb") as file:
             pickle.dump(self.data, file)
-            print("Contack book has saved.")
+            print("\nContack book has saved.")
 
     def load_from_file(self, filename):
         try:
             with open(filename, 'rb') as f:
                 self.data = pickle.load(f)
-                print("Contact book has loaded.")
+                print("\nContact book has loaded.")
         except (FileNotFoundError, pickle.UnpicklingError):
             with open(filename, 'wb') as f:
                 self.data = {}
@@ -230,72 +239,174 @@ class AddressBook(UserDict):
             return '\n'.join(el for el in found_match)
     
     def congrats_list(self, shift_days, record: Record = None):
-        congrats_list = []
+        congrats_dict = {}
         for record in self.data.values():
             res = record.days_to_birthday_int_numbers()
             if 0 <= res <= shift_days:
-                congrats_list.append(str(record))
-        if len(congrats_list) == 0:
+                congrats_dict[str(record)] = res
+        new_dict = defaultdict(list)
+        for rec, res in congrats_dict.items():
+            new_dict[res].append(rec)
+        sorted_list = sorted(new_dict.items())
+        if len(congrats_dict) == 0:
             return f'No users are celebrating birthday in the next {shift_days} days'
         else:
-            print(f'\n{len(congrats_list)} users are celebrating their birthday in the next {shift_days} days: ')
+            almost_list = []
+            for el in sorted_list:
+                almost_list.append(el[1])
+            congrats_list = []
+            for lst in almost_list:
+                for el in lst:
+                    congrats_list.append(el)
+            print(f'\n{len(congrats_dict)} users are celebrating their birthday in the next {shift_days} days: ')
             return '\n'.join(el for el in congrats_list)
         
     def next_week_birthdays(self):
-        next_week_list = []
+        next_week_dict = {}
         today = datetime.now().date().weekday()
         for record in self.data.values():
             res = record.days_to_birthday_int_numbers()
             if 7 - today <= res < 14 - today:
-                next_week_list.append(str(record))
-        if len(next_week_list) == 0:
+                next_week_dict[str(record)] = res
+        new_dict = defaultdict(list)
+        for rec, res in next_week_dict.items():
+            new_dict[res].append(rec)
+        sorted_list = sorted(new_dict.items())
+        if len(next_week_dict) == 0:
             return f'No users are celebrating birthday in the next week'
         else:
-            print(f'\n{len(next_week_list)} users are celebrating their birthday in the next week: ')
-            return '\n'.join(el for el in next_week_list)
+            almost_list = []
+            for el in sorted_list:
+                almost_list.append(el[1])
+            congrats_list = []
+            for lst in almost_list:
+                for el in lst:
+                    congrats_list.append(el)
+            print(f'\n{len(congrats_list)} users are celebrating their birthday in the next week: ')
+            return '\n'.join(el for el in congrats_list)
         
     def current_week_birthdays(self):
-        current_week_list = []
+        current_week_dict = {}
         today = datetime.now().date().weekday()
         for record in self.data.values():
             res = record.days_to_birthday_int_numbers()
-            if - today <= res < 7 - today:
-                current_week_list.append(str(record))
-        if len(current_week_list) == 0:
-            return f'No users are celebrating birthday in the current week'
+            if 0 <= res < 7 - today:
+                current_week_dict[str(record)] = res
+        new_dict = defaultdict(list)
+        for rec, res in current_week_dict.items():
+            new_dict[res].append(rec)
+        sorted_list = sorted(new_dict.items())
+        if len(current_week_dict) == 0:
+            return f'No users are celebrating birthday in the next week'
         else:
-            print(f'\n{len(current_week_list)} users are celebrating their birthday in the current week: ')
-            return '\n'.join(el for el in current_week_list)
+            almost_list = []
+            for el in sorted_list:
+                almost_list.append(el[1])
+            congrats_list = []
+            for lst in almost_list:
+                for el in lst:
+                    congrats_list.append(el)
+            print(f'\n{len(congrats_list)} users are celebrating their birthday in the next week: ')
+            return '\n'.join(el for el in congrats_list)
 
     def next_month_birthdays(self, record: Record = None):
-        next_month_list = []
+        next_month_dict = {}
         current_month = datetime.now().date().month
         for record in self.data.values():
             if not record.birthday:
                 continue
             else:
-                if record.birthday.value.month == current_month + 1:
-                    next_month_list.append(str(record))
-        if len(next_month_list) == 0:
+                if current_month == 12:
+                    if record.birthday.value.month == current_month - 11:
+                        next_month_dict[str(record)] = record.birthday.value.day
+                    new_dict = defaultdict(list)
+                    for rec, res in next_month_dict.items():
+                        new_dict[res].append(rec)
+                    sorted_list = sorted(new_dict.items())
+                else:    
+                    if record.birthday.value.month == current_month + 1:
+                        next_month_dict[str(record)] = record.birthday.value.day
+                    new_dict = defaultdict(list)
+                    for rec, res in next_month_dict.items():
+                        new_dict[res].append(rec)
+                    sorted_list = sorted(new_dict.items())
+        if len(next_month_dict) == 0:
             return f'No users are celebrating birthday in the next month'
         else:
-            print(f'\n{len(next_month_list)} users are celebrating their birthday in the next month: ')
-            return '\n'.join(el for el in next_month_list)
+            almost_list = []
+            for el in sorted_list:
+                almost_list.append(el[1])
+            congrats_list = []
+            for lst in almost_list:
+                for el in lst:
+                    congrats_list.append(el)
+            print(f'\n{len(congrats_list)} users are celebrating their birthday in the next month: ')
+            return '\n'.join(el for el in congrats_list)
         
     def current_month_birthdays(self, record: Record = None):
-        current_month_list = []
+        current_month_dict = {}
         current_month = datetime.now().date().month
         for record in self.data.values():
             if not record.birthday:
                 continue
             else:
                 if record.birthday.value.month == current_month:
-                    current_month_list.append(str(record))
-        if len(current_month_list) == 0:
+                    current_month_dict[str(record)] = record.birthday.value.day
+        new_dict = defaultdict(list)
+        for rec, res in current_month_dict.items():
+            new_dict[res].append(rec)
+        sorted_list = sorted(new_dict.items())
+        if len(current_month_dict) == 0:
             return f'No users are celebrating birthday in the current month'
         else:
-            print(f'\n{len(current_month_list)} users are celebrating their birthday in the current month: ')
-            return '\n'.join(el for el in current_month_list)
+            almost_list = []
+            for el in sorted_list:
+                almost_list.append(el[1])
+            congrats_list = []
+            for lst in almost_list:
+                for el in lst:
+                    congrats_list.append(el)
+            print(f'\n{len(congrats_list)} users are celebrating their birthday in the current month: ')
+            return '\n'.join(el for el in congrats_list)
+
+    def sort_by_name(self, record: Record=None):  # Функція сортує по імені всю книгу контактів.
+        contactbook_dict = {}
+        for record in self.data.values():
+            contactbook_dict[record.name.value] = str(record)
+        return '\n'.join(el for el in sorted(contactbook_dict.values()))
+    
+    def sort_by_age(self, record: Record=None):  # Функція сортує contactbook по віку користувача.
+        contactbook_dict = {}
+        no_birthday_list = []
+        for record in self.data.values():
+            if record.birthday:
+                res = record.how_much_user_live()
+                contactbook_dict[str(record)] = res
+            else:
+                no_birthday_list.append(str(record))
+        print(contactbook_dict)
+        new_dict = defaultdict(list)
+        for rec, res in contactbook_dict.items():
+            new_dict[res].append(rec)
+        sorted_list = sorted(new_dict.items(), reverse=True)
+        if len(contactbook_dict) == 0:
+            return f'No data for birthday in all records.'
+        else:
+            almost_list = []
+            for el in sorted_list:
+                almost_list.append(el[1])
+                print(el)
+            print(almost_list)
+            contactbook_list = []
+            for lst in almost_list:
+                for el in lst:
+                    contactbook_list.append(el)
+        print(no_birthday_list)
+        print(f'\nThere are still {len(no_birthday_list)} users without birthday: ')
+        for el in no_birthday_list:
+            print(el)
+        print('\nYour contactbook is sorted due to the age of users: \n')
+        return '\n'.join(el for el in contactbook_list)
 
     def __repr__(self):
         return str(self)
