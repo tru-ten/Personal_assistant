@@ -39,12 +39,11 @@ def error_handler(func):
 def start():
     contact_book.load_from_file(filename)
     # Додаю невеликий привітальний текст. Тут в принципі можна й щось інше написати. І ще додав вивід кожного рядка за 1,5 секунди.
-    invitation_text = ["Hello. I am your personal assistant.", 
-                         "I will help you organize your contact book.", 
+    invitation_text = ["I will help you organize your contact book.", 
                          "Using the command 'help', you can find out the list of available operations.",
                           "Let's start and enjoy!!!" ]
     for string in invitation_text:
-        time.sleep(0.2)
+        time.sleep(1)
         print(string)
 
 
@@ -59,7 +58,7 @@ def helper(*args):
 @error_handler
 def exit_command(*args):
     contact_book.save_to_file(filename) 
-    return 'Bye. Have a nice day. See you next time.\n'
+    return "\nYou've finished work with Contact book."
 
 
 @error_handler
@@ -79,6 +78,7 @@ def no_user(name):
     return f'There is no user with name {name}'
 
 
+@error_handler
 def add_user_command(*args):
     print('To stop the execution enter one of these commands (stop, break, -)')
     name = data_input(Name, 'Enter the name of the new contact')
@@ -285,7 +285,7 @@ def birthdays_current_month(*args):  # Користувачі, котрі свя
 
 
 @error_handler
-def how_long_user_live_command():  # Функція повертає кількість прожитих днів користувачем.
+def how_long_user_live_command(*args):  # Функція повертає кількість прожитих днів користувачем.
     name = Name(input('Enter name of the user: '))
     rec: Record = contact_book.get(str(name))
     if rec:
@@ -303,12 +303,12 @@ def how_long_user_live_command():  # Функція повертає кільк�
 
 
 @error_handler
-def sort_by_name_command():
+def sort_by_name_command(*args):
     return contact_book.sort_by_name()
 
 
 @error_handler
-def sort_by_age_command():
+def sort_by_age_command(*args):
     return contact_book.sort_by_age()
 
 
@@ -475,6 +475,8 @@ def delete_house_command(*args):
     return rec.delete_house()
 
     # Додаю функцію для пошуку збігів у contactbook. Повертає список контактів, у яких присутній збіг.
+
+
 @error_handler
 def search_command(*args):  # Шукає задану послідовність символів у addressbook.
     if len(contact_book) == 0:  # Якщо словник порожній.
@@ -503,7 +505,6 @@ HANDLERS = {
     change_city_command: ('26', 'change city', 'change town', 'change village'),
     change_street_command: ('27', 'change street',),
     change_house_command: ('28', 'change house',),
-    # видалення записів (31-38)
     delete_rec_command: ('31', 'delete user', 'delete contact',),
     delete_phone_command: ('32', 'delete phone', 'remove phone',),
     delete_birthday_command: ('33', 'delete birthday', 'remove birthday'),
@@ -512,7 +513,6 @@ HANDLERS = {
     delete_city_command: ('36', 'delete city', 'remove city', 'delete town', 'remove town', 'delete village', 'remove village'),
     delete_street_command: ('37', 'delete street', 'remove street',),
     delete_house_command: ('38', 'delete house', 'remove house',),
-    # видалення записів (31-37)
     days_to_birthday: ('41', 'days to birthday', 'days to bd'),
     congrats_list_command: ('42', 'upcoming birthdays', 'closest birthdays'),
     birthdays_next_week: ('43', 'next week birthdays', 'next week'),
@@ -548,7 +548,7 @@ def unknown_command(*args):
         possibilities.extend([i for i in commands])
     
     n = 1
-    cutoff = 0.8
+    cutoff = 0.7
     close_matches = difflib.get_close_matches(command, 
                 possibilities, n, cutoff)
     
