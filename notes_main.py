@@ -6,8 +6,7 @@ OPTIONS = {
         1: ["name", "text", Field],
         2: ["content", "text", Field],
         3: ["tags", "text", list],  
-        4: ["status", "true(any character)/false(empty)"],
-        5: []
+        4: []
     }
 
 def get_input_int():
@@ -38,8 +37,7 @@ def content_note(note):
             f"\n\n{'Note menu':.^40}"
             "\n1 - delete"
             "\n2 - edit" 
-            "\n3 - toggle status"
-            "\n4 - return to main menu")
+            "\n3 - return to main menu")
     option = get_input_int()
     if option == 1:
         return note_book.delete_in_note(note) 
@@ -66,6 +64,9 @@ def search_tags(note):
             add_tag_in_note(search, note)
         elif option == 2:
             return edit_tag(note)
+        else:
+            print("> Error. Enter a number.")
+            return edit_tag(note)
 
 def add_tag_in_note(tag_name, note):
     new_tag = Tag(tag_name)
@@ -81,6 +82,21 @@ def search_tag_in_tegs():
     tag = numerator(list_tags)
     return tag
 
+def search_tag_in_note(note):
+    list_tags = note.get_tags()
+    for index, tag in enumerate(list_tags):
+        print(index + 1, tag)
+    option_input = get_input_int()
+    print(index)
+    print(option_input)
+    if index + 2 > option_input:
+        option_input =-1
+        tag = list_tags[option_input]
+    else:
+        print("> Error. Enter a number.")
+        return search_tag_in_note(note)
+    return tag
+
 def edit_tag(note):
     while True:
         print(f"> Record: {note}"  
@@ -90,11 +106,9 @@ def edit_tag(note):
             "\n3 - return to record menu")
         option = get_input_int()
         if option == 1:
-            tag_search = search_tag_in_tegs()
-            print(tag_search)
+            tag_search = search_tag_in_note(note)
             if tag_search:
-                tag = Tag(tag_search)
-                note.remove_tag(tag)
+                note.delete_tag_from_note(note, tag_search)
         elif option == 2:  
             tag_search = search_tags(note)
             print(tag_search)
@@ -105,10 +119,14 @@ def edit_tag(note):
             return content_note(note)
 
 def edit_note(option, note):
+    if option == 4:
+        note_book.edit_status_in_note(note)
+        return note_menu("Notes Editor", edit_note, note)
     try:
         search_params = OPTIONS[option]
     except KeyError:
-        return print("> Error: Invalid search parameter selected")    
+        print("> Error: Invalid search parameter selected")
+        return content_note(note)
     if not search_params:
         return print("> Error: Invalid search parameter selected")  
     if search_params[0] == "tags":
@@ -126,9 +144,21 @@ def search_note(option, note):
         print("> Error: Invalid search parameter selected") 
         return
     if not search_params:
-        return
-    search_term = input(f"Enter value for {search_params[0]} field (format input: {search_params[1]}) >>> ")
-    list_result = note_book.search_in_notes(search_params[0], search_term)
+        if option == 4:
+            print(f"Enter value for status field (format input: True(1)/False(2))")
+            input_status = get_input_int()
+            if input_status == 1:
+                search_status = True
+            elif input_status == 2:
+                search_status = False
+            else:
+                print("> Incorrect selection. Try again.")
+                return search_note(option, note) 
+            list_result = note_book.search_in_notes("status", search_status)
+    else: 
+        search_term = input(f"Enter value for {search_params[0]} field (format input: {search_params[1]}) >>> ")
+        list_result = note_book.search_in_notes(search_params[0], search_term)
+    
     result = numerator(list_result)
     if result:
         content_note(result)
