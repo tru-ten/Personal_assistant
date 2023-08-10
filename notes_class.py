@@ -30,7 +30,6 @@ class Tag(Field):
         return str(self.value)
     
 
-
 class Note:
 
     def __init__(self, name: Field, content: Field, tag: Tag = None) -> None:
@@ -66,7 +65,9 @@ class Note:
     def get_tags(note):
         return note.tags
 
+
 class Notebook(UserDict):
+
     def __init__(self):
         self.data = {}
         self.tags_list = []
@@ -77,7 +78,6 @@ class Notebook(UserDict):
     def __repr__(self):
         return str(self)
     
-        
     def add_note(self, note):
         self.data[note.name.value] = note
         return f"Note '{note}' added successfully."
@@ -130,7 +130,6 @@ class Notebook(UserDict):
             if search.lower() in tag.lower():
                 tags.append(tag)
         return tags
-    
     
     def iterator(self, et_list, n):
         count = 0

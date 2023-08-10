@@ -51,7 +51,7 @@ def search_tags(note):
     tag_list = note_book.search_in_tags(search)
     tag = numerator(tag_list)
     if tag:  
-        print(f"знайдено тег {tag}")
+        print(f"found tag {tag}")
         return tag
     else:
         print("No search results found"
