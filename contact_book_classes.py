@@ -312,16 +312,12 @@ class Record:
             return 'You have not included house address yet'
         self.house = None
         return f'House address for contact {self.name} was deleted successfully'
-
-
-    def __str__(self) -> str:
-        return f"User: {self.name} | phones: {', '.join(str(p) for p in self.phones)} | birthday: {self.birthday} " \
-               f"| email: {self.email} | address: {self.country}/{self.city}/{self.street}/{self.house}"    
+      
 
     # Рядкове представлення для одного запису у contact_book
     def __str__(self) -> str:
         return f"User: {self.name} | phones: {', '.join(str(p) for p in self.phones)} | birthday: {self.birthday if self.birthday != None else ''} " \
-               f"| email: {self.email if self.email != None else ''} | address: {self.address} "    
+               f"| email: {self.email if self.email != None else ''} | address: {self.country}/{self.city}/{self.street}/{self.house} "    
 
 
 
