@@ -82,7 +82,7 @@ class Country(Field):
 
     @Field.value.setter
     def value(self, value):
-        with open('countries.txt', 'r') as fh:
+        with open('../countries.txt', 'r') as fh:
             readlines = fh.readlines()
             for line in readlines:
                 if value.lower() == 'russia':
