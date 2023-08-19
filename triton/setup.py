@@ -7,5 +7,6 @@ setup(name='triton',
       author='team_6th.py',
       license='MIT',
       packages=find_namespace_packages(),
+      include_package_data=True,
       entry_points = {'console_scripts': 'starttriton = triton.triton:main'}
       )
