@@ -507,7 +507,7 @@ class AddressBook(UserDict):
                 contactbook_dict[str(record)] = res
             else:
                 no_birthday_list.append(str(record))
-        print(contactbook_dict)
+        # print(contactbook_dict)
         new_dict = defaultdict(list)
         for rec, res in contactbook_dict.items():
             new_dict[res].append(rec)
@@ -518,13 +518,13 @@ class AddressBook(UserDict):
             almost_list = []
             for el in sorted_list:
                 almost_list.append(el[1])
-                print(el)
-            print(almost_list)
+                # print(el)
+            # print(almost_list)
             contactbook_list = []
             for lst in almost_list:
                 for el in lst:
                     contactbook_list.append(el)
-        print(no_birthday_list)
+        # print(no_birthday_list)
         print(f'\nThere are still {len(no_birthday_list)} users without birthday: ')
         for el in no_birthday_list:
             print(el)
