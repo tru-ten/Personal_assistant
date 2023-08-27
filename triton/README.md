@@ -43,7 +43,7 @@ Our application has three auxiliary functions:
 3.	`File sorter`
  
 Now in more detail by section.
-### 1.Working with the contact book.
+## 1.Working with the contact book.
 TRITON knows how to do everything necessary so that you can easily find out information about loved ones, or just people with whom you are in contact.
 TRITON adds, changes and deletes records about the user (name, telephone numbers, date of birth, e-mail address, residential address). For most fields in the record, check for the veracity of the entered information is taken into account.
 - The phone must be in the format +380XXXXXXXXX, that is, we currently work with Ukrainian phone numbers. The phone number must start with the phone code "+380" and 9 more digits.
@@ -61,11 +61,11 @@ TRITON displays a list of all contacts, can sort them by name or age of the user
 The user can always get information about available operations at any stage of work by calling `help`. For convenience, you can enter a short command consisting of two numbers or the full name of the command. For example, `55` and `show all` are equivalent.
 Also, TRITON is able to guess the command that the user wants to enter, if he accidentally mixed up characters. For example, when entering `aad user`, `edd user`, `dad user`, TRITON will analyze and offer to enter the correct `add user` command.
 
-### 2. Working with a notebook.
+## 2. Working with a notebook.
 
 Notebook is designed for creating, editing, searching and organizing text notes.
 
-# Key Features
+### Key Features
 
 - Create, edit, and delete textual notes with titles and content
 - Add multiple tags to notes for easy filtering and organization
@@ -76,7 +76,7 @@ Notebook is designed for creating, editing, searching and organizing text notes.
 - Support for Ukrainian and English languages
 - Intuitive command-line interface
 
-# Usage
+### Usage
 
 The main menu provides these core options:
 
@@ -92,14 +92,14 @@ All notes are saved locally to the `notebook.json` file. This file is automatica
 
 On exit, all changes are automatically saved to `notebook.json`.
 
-# Implementation
+### Implementation
 
 The Notebook class stores all notes in an internal dictionary and performs create, read, update, and delete operations.
 
 Data is persisted using JSON serialization.
 
 
-### 3. File sorter.
+## 3. File sorter.
 
 The file sorter is designed to sort files by categories: images, documents, audio, video, archives, other. The sorting takes place according to the file extension, namely:
 
